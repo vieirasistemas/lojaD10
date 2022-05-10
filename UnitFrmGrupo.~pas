@@ -1,0 +1,655 @@
+unit UnitFrmGrupo;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Mask, StdCtrls, Grids, DBGrids, Db, DBTables, DBCtrls, ExtDlgs, Buttons,
+  ExtCtrls, QRCtrls, QuickRpt, ZAbstractRODataset, ZAbstractDataset,
+  ZDataset, jpeg, EditAlinhado, Menus;
+
+type
+  TFrmGrupo = class(TForm)
+    DBGrid1: TDBGrid;
+    Panel3: TPanel;
+    btnovo: TBitBtn;
+    btgravar: TBitBtn;
+    btalterar: TBitBtn;
+    btexcluir: TBitBtn;
+    btcancelar: TBitBtn;
+    P_dados: TPanel;
+    Label1: TLabel;
+    Label16: TLabel;
+    mecodigo: TMaskEdit;
+    eddescricao: TEdit;
+    qratualizar: TZQuery;
+    Label6: TLabel;
+    edvlrvenda: TEditAlinh;
+    eddescreal: TEditAlinh;
+    Label2: TLabel;
+    eddesccc: TEditAlinh;
+    Label3: TLabel;
+    eddesccd: TEditAlinh;
+    Label4: TLabel;
+    GroupBox1: TGroupBox;
+    Label10: TLabel;
+    edproduto: TEdit;
+    lbproduto: TLabel;
+    Label5: TLabel;
+    Label15: TLabel;
+    edqtd: TEditAlinh;
+    grupos: TZQuery;
+    gruposcodigo: TStringField;
+    gruposdescricao: TStringField;
+    gruposvlrvenda: TFloatField;
+    gruposdescreal: TFloatField;
+    gruposdesccc: TFloatField;
+    gruposdesccd: TFloatField;
+    dsgrupos: TDataSource;
+    DBGrid2: TDBGrid;
+    produtos_composto: TZQuery;
+    produtos_compostoproduto: TIntegerField;
+    produtos_compostogrupo: TStringField;
+    produtos_compostoqtd: TIntegerField;
+    dsprodutos_composto: TDataSource;
+    produtos_compostonome: TStringField;
+    PopupMenu1: TPopupMenu;
+    InativarProdutosdoGrupo1: TMenuItem;
+    procedure btnovoClick(Sender: TObject);
+    procedure eddescricaoEnter(Sender: TObject);
+    procedure btgravarClick(Sender: TObject);
+    procedure mecodigoExit(Sender: TObject);
+    procedure btexcluirClick(Sender: TObject);
+    procedure btlocalizarClick(Sender: TObject);
+    procedure btalterarClick(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure btcancelarClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure DBGrid1CellClick(Column: TColumn);
+    procedure mecodigoEnter(Sender: TObject);
+    procedure edvlrvendaExit(Sender: TObject);
+    procedure eddescrealExit(Sender: TObject);
+    procedure eddescccExit(Sender: TObject);
+    procedure eddesccdExit(Sender: TObject);
+    procedure edprodutoKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure edprodutoExit(Sender: TObject);
+    procedure dsgruposDataChange(Sender: TObject; Field: TField);
+    procedure edqtdExit(Sender: TObject);
+    procedure DBGrid2DblClick(Sender: TObject);
+    procedure InativarProdutosdoGrupo1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmGrupo: TFrmGrupo;
+  opcao,check:boolean;
+  log: TextFile;
+  R_hora,texto,tip:string;
+
+implementation
+
+uses Unitdm, Unitfrmprincipal, UnitFrmCadProdutos;
+
+{$R *.DFM}
+
+function StringToFloat(s : string) : Extended;
+{ Filtra uma string qualquer, convertendo as suas partes
+  numéricas para sua representação decimal, por exemplo:
+  'R$ 1.200,00' para 1200,00 '1AB34TZ' para 134}
+var
+  i :Integer;
+  t : string;
+  SeenDecimal,SeenSgn : Boolean;
+begin
+  t := '';
+  SeenDecimal := False;
+  SeenSgn := False;
+  {Percorre os caracteres da string:}
+  for i := Length(s) downto 0 do
+  {Filtra a string, aceitando somente números e separador decimal:}
+  if (s[i] in ['0'..'9', '-','+',DecimalSeparator]) then
+  begin
+  if (s[i] = DecimalSeparator) and (not SeenDecimal) then
+  begin
+  t := s[i] + t;
+  SeenDecimal := True;
+  end
+  else if (s[i] in ['+','-']) and (not SeenSgn) and (i = 1) then
+  begin
+  t := s[i] + t;
+  SeenSgn := True;
+  end
+  else if s[i] in ['0'..'9'] then
+  begin
+  t := s[i] + t;
+  end;
+  end;
+  Result := StrToFloat(t);
+end;
+
+procedure Atualiza;
+begin
+  FrmGrupo.mecodigo.EditMask:='';
+  FrmGrupo.mecodigo.text:=FrmGrupo.gruposcodigo.value;
+  FrmGrupo.eddescricao.text:=FrmGrupo.Gruposdescricao.value;
+  if FrmGrupo.gruposvlrvenda.Value>0 then
+     FrmGrupo.edvlrvenda.text:=formatfloat('#,##0.00',FrmGrupo.gruposvlrvenda.value)
+  else
+     FrmGrupo.edvlrvenda.text:='';
+  if FrmGrupo.gruposdescreal.Value>0 then
+     FrmGrupo.eddescreal.text:=formatfloat('0.00',FrmGrupo.gruposdescreal.value)
+  else
+     FrmGrupo.eddescreal.text:='';
+  if FrmGrupo.gruposdesccc.Value>0 then
+     FrmGrupo.eddesccc.text:=formatfloat('0.00',FrmGrupo.gruposdesccc.value)
+  else
+     FrmGrupo.eddesccc.text:='';
+  if FrmGrupo.gruposdesccd.Value>0 then
+     FrmGrupo.eddesccd.text:=formatfloat('0.00',FrmGrupo.gruposdesccd.value)
+  else
+     FrmGrupo.eddesccd.text:='';
+end;
+
+procedure limpar;
+begin
+  FrmGrupo.mecodigo.text:='';
+  FrmGrupo.eddescricao.text:='';
+end;
+
+procedure Desabilita;
+begin
+  FrmGrupo.btnovo.enabled:=false;
+  FrmGrupo.btalterar.enabled:=false;
+  FrmGrupo.btexcluir.enabled:=false;
+  FrmGrupo.btgravar.enabled:=true;
+  FrmGrupo.P_dados.enabled:=true;
+end;
+
+procedure Habilita;
+begin
+  FrmGrupo.btnovo.enabled:=true;
+  FrmGrupo.btalterar.enabled:=true;
+  FrmGrupo.btexcluir.enabled:=true;
+  FrmGrupo.btgravar.enabled:=false;
+  FrmGrupo.P_dados.enabled:=false;
+end;
+
+procedure TFrmGrupo.btnovoClick(Sender: TObject);
+begin
+        eddescricao.OnEnter:=eddescricaoEnter;
+        opcao:=true;
+        Desabilita;
+        limpar;
+        mecodigo.setfocus;
+end;
+
+procedure TFrmGrupo.eddescricaoEnter(Sender: TObject);
+begin
+      if Grupos.Locate('codigo', mecodigo.text, []) then
+         begin
+           showmessage('Conta já Cadastrada');
+           mecodigo.SetFocus;
+         end;
+end;
+
+procedure TFrmGrupo.btgravarClick(Sender: TObject);
+var
+G_descricao:string;
+G_vlrvenda,G_descreal,G_desccc,G_desccd:double;
+begin
+      if opcao=true then
+         begin
+           Grupos.Insert;
+           Gruposcodigo.value:=mecodigo.text;
+           Gruposdescricao.value:=eddescricao.text;
+           if edvlrvenda.Text<>'' then
+              Gruposvlrvenda.Value:=StringToFloat(edvlrvenda.Text)
+           else
+              Gruposvlrvenda.Value:=0;
+           if eddescreal.Text<>'' then
+              Gruposdescreal.Value:=StringToFloat(eddescreal.Text)
+           else
+              Gruposdescreal.Value:=0;
+           if eddesccc.Text<>'' then
+              Gruposdesccc.Value:=StringToFloat(eddesccc.Text)
+           else
+              Gruposdesccc.Value:=0;
+           if eddesccd.Text<>'' then
+              Gruposdesccd.Value:=StringToFloat(eddesccd.Text)
+           else
+              Gruposdesccd.Value:=0;
+           Grupos.post;
+
+           R_hora:=TimeToStr(time);
+           dm.rastro.Close;
+           dm.rastro.SQL.Clear;
+           dm.rastro.SQL.Add('select * from rastro');
+           dm.rastro.SQL.Add('where (1=2)');
+           dm.rastro.Open;
+           dm.rastro.Insert;
+           dm.rastrodata.Value:=date;
+           dm.rastrohora.Value:=R_hora;
+           dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+           dm.rastrorotina.Value:='GRUPOS';
+           dm.rastrooperacao.Value:='I';
+           dm.rastrohistorico.Value:=mecodigo.Text+' '+
+           eddescricao.Text;
+           dm.rastro.Post;
+           dm.rastro.Close;
+         end
+         else
+         begin
+           G_descricao:=eddescricao.text;
+           if edvlrvenda.Text<>'' then
+              G_vlrvenda:=StringToFloat(edvlrvenda.Text)
+           else
+              G_vlrvenda:=0;
+           if eddescreal.Text<>'' then
+              G_descreal:=StringToFloat(eddescreal.Text)
+           else
+              G_descreal:=0;
+           if eddesccc.Text<>'' then
+              G_desccc:=StringToFloat(eddesccc.Text)
+           else
+              G_desccc:=0;
+           if eddesccd.Text<>'' then
+              G_desccd:=StringToFloat(eddesccd.Text)
+           else
+              G_desccd:=0;
+           qratualizar.close;
+           qratualizar.sql.clear;
+           qratualizar.sql.add('update grupos set');
+           qratualizar.sql.add('descricao = :G_descricao,');
+           qratualizar.sql.add('vlrvenda = :G_vlrvenda,');
+           qratualizar.sql.add('descreal = :G_descreal,');
+           qratualizar.sql.add('desccc = :G_desccc,');
+           qratualizar.sql.add('desccd = :G_desccd');
+           qratualizar.sql.add('where codigo = '+chr(39)+mecodigo.text+chr(39));
+           qratualizar.Params[0].Value := G_descricao;
+           qratualizar.Params[1].Value := G_vlrvenda;
+           qratualizar.Params[2].Value := G_descreal;
+           qratualizar.Params[3].Value := G_desccc;
+           qratualizar.Params[4].Value := G_desccd;
+           qratualizar.ExecSQL;
+
+           R_hora:=TimeToStr(time);
+           dm.rastro.Close;
+           dm.rastro.SQL.Clear;
+           dm.rastro.SQL.Add('select * from rastro');
+           dm.rastro.SQL.Add('where (1=2)');
+           dm.rastro.Open;
+           dm.rastro.Insert;
+           dm.rastrodata.Value:=date;
+           dm.rastrohora.Value:=R_hora;
+           dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+           dm.rastrorotina.Value:='GRUPOS';
+           dm.rastrooperacao.Value:='A';
+           dm.rastrohistorico.Value:=mecodigo.Text+' '+
+           eddescricao.Text;
+           dm.rastro.Post;
+           dm.rastro.Close;
+         end;
+      Grupos.Close;
+      Grupos.Open;
+      Grupos.Locate('codigo',mecodigo.Text,[]);
+      Habilita;
+      btnovo.setfocus;
+end;
+
+procedure TFrmGrupo.mecodigoExit(Sender: TObject);
+var
+  pos_anterior: string;
+begin
+        if eddescricao.text<>'' then
+           begin
+              if not (length(mecodigo.text) in [2, 4]) then
+                 begin
+                    showmessage('Preenchimento Incorreto...');
+                    mecodigo.setfocus;
+                 end;
+
+              case length(mecodigo.text) of
+                2    : pos_anterior := mecodigo.text;
+                4    : pos_anterior := copy(mecodigo.text,1,2);
+              end;
+
+
+             if length(mecodigo.text)=2 then
+                if Grupos.Locate('codigo', mecodigo.text, []) then
+                   begin
+                     showmessage('Conta já Cadastrada');
+                     mecodigo.SetFocus;
+                   end
+                  else
+                   eddescricao.setfocus
+             else
+             if not Grupos.Locate('codigo', pos_anterior, []) then
+             begin
+                showmessage('Conta Superior não Localizada');
+                mecodigo.SetFocus;
+             end
+             else
+             begin
+                mecodigo.EditMask:='99.99;0;_';
+                eddescricao.setfocus;
+             end;
+           end;
+end;
+procedure TFrmGrupo.btexcluirClick(Sender: TObject);
+begin
+      if eddescricao.Text='' then
+         begin
+           application.MessageBox('Clique em um grupo para excluí-lo','Atenção',mb_ok);
+           dbgrid1.setfocus;
+         end
+         else
+         begin
+           check:=false;
+
+           dm.produtos.close;
+           dm.produtos.sql.clear;
+           dm.produtos.sql.add('select * from produtos');
+           dm.produtos.sql.add('where grupo = '+chr(39)+mecodigo.text+chr(39));
+           dm.produtos.open;
+           if dm.produtos.RecordCount>0 then
+              check:=true;
+
+           if check=true then
+              begin
+                application.MessageBox('Grupo com Movimentação','Atenção',mb_ok+MB_ICONWARNING);
+                dbgrid1.setfocus;
+              end
+              else
+              begin
+                if application.messagebox('Deseja apagar o registro?','Gestor',mb_yesno+mb_iconquestion)=id_yes then
+                   begin
+                    R_hora:=TimeToStr(time);
+                    dm.rastro.Close;
+                    dm.rastro.SQL.Clear;
+                    dm.rastro.SQL.Add('select * from rastro');
+                    dm.rastro.SQL.Add('where (1=2)');
+                    dm.rastro.Open;
+                    dm.rastro.Insert;
+                    dm.rastrodata.Value:=date;
+                    dm.rastrohora.Value:=R_hora;
+                    dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+                    dm.rastrorotina.Value:='GRUPOS';
+                    dm.rastrooperacao.Value:='E';
+                    dm.rastrohistorico.Value:=mecodigo.Text+' '+
+                    eddescricao.Text;
+                    dm.rastro.Post;
+                    dm.rastro.Close;
+
+                     qratualizar.Close;
+                     qratualizar.SQL.Clear;
+                     qratualizar.SQL.Add('delete from grupos');
+                     qratualizar.sql.add('where codigo = '+chr(39)+mecodigo.text+chr(39));
+                     qratualizar.ExecSQL;
+                     Grupos.Close;
+                     Grupos.SQL.Clear;
+                     Grupos.SQL.Add('select * from grupos');
+                     Grupos.SQL.Add('order by codigo');
+                     Grupos.open;
+                     limpar;
+                   end;
+              end;
+         end;
+end;
+
+procedure TFrmGrupo.btlocalizarClick(Sender: TObject);
+var BMP: TBitMap;
+begin
+end;
+
+procedure TFrmGrupo.btalterarClick(Sender: TObject);
+begin
+        eddescricao.OnEnter:=nil;
+        opcao:=false;
+        Desabilita;
+        eddescricao.setfocus;
+end;
+
+procedure TFrmGrupo.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+        if key=#13 then
+        begin
+           SelectNext(activecontrol,True,True);
+           key:=#0;
+        end;
+end;
+
+procedure TFrmGrupo.btcancelarClick(Sender: TObject);
+begin
+  if btnovo.Enabled=false then
+     begin
+      btnovo.enabled:=true;
+      btalterar.enabled:=true;
+      btexcluir.enabled:=true;
+      btgravar.enabled:=false;
+      P_dados.enabled:=false;
+      Grupos.cancel;
+      atualiza;
+      btnovo.setfocus;
+     end
+     else
+      close;
+end;
+
+procedure TFrmGrupo.FormShow(Sender: TObject);
+begin
+      Grupos.Close;
+      Grupos.SQL.Clear;
+      Grupos.SQL.Add('select * from grupos');
+      Grupos.SQL.Add('order by codigo');
+      Grupos.open;
+end;
+
+procedure TFrmGrupo.DBGrid1CellClick(Column: TColumn);
+begin
+      atualiza;
+end;
+
+procedure TFrmGrupo.mecodigoEnter(Sender: TObject);
+begin
+        mecodigo.EditMask:='';
+end;
+
+procedure TFrmGrupo.edvlrvendaExit(Sender: TObject);
+begin
+  if edvlrvenda.Text<>'' then
+     edvlrvenda.Text:=formatfloat('#,##0.00',StringToFloat(edvlrvenda.text));
+end;
+
+procedure TFrmGrupo.eddescrealExit(Sender: TObject);
+begin
+  if eddescreal.Text<>'' then
+     eddescreal.Text:=formatfloat('0.00',StringToFloat(eddescreal.text));
+end;
+
+procedure TFrmGrupo.eddescccExit(Sender: TObject);
+begin
+  if eddesccc.Text<>'' then
+     eddesccc.Text:=formatfloat('0.00',StringToFloat(eddesccc.text));
+end;
+
+procedure TFrmGrupo.eddesccdExit(Sender: TObject);
+begin
+  if eddesccd.Text<>'' then
+     eddesccd.Text:=formatfloat('0.00',StringToFloat(eddesccd.text));
+end;
+
+procedure TFrmGrupo.edprodutoKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if key=vk_f11 then
+     begin
+       try
+         Application.CreateForm(TFrmCadProdutos, FrmCadProdutos);
+         FrmCadProdutos.showmodal;
+       finally
+         FrmCadProdutos.Release;
+         FrmCadProdutos:=nil;
+       end;
+     end;
+end;
+
+procedure TFrmGrupo.edprodutoExit(Sender: TObject);
+begin
+  if edproduto.Text<>'' then
+     begin
+      dm.produtos.close;
+      dm.produtos.sql.clear;
+      dm.produtos.sql.add('select * from produtos');
+      dm.produtos.sql.add('where codbarra = '+chr(39)+edproduto.text+chr(39));
+      dm.produtos.open;
+      if dm.produtos.RecordCount>0 then
+         begin
+           lbproduto.Caption:=dm.produtosnome.value;
+         end
+         else
+         begin
+           dm.produtos.close;
+           dm.produtos.sql.clear;
+           dm.produtos.sql.add('select * from produtos');
+           dm.produtos.sql.add('where codigo = '+edproduto.Text);
+           dm.produtos.open;
+           if dm.produtos.RecordCount>0 then
+              begin
+                lbproduto.Caption:=dm.produtosnome.value;
+              end
+              else
+              begin
+                application.MessageBox('Produto não Localizado','Atenção',mb_ok+mb_iconinformation);
+                edproduto.Text:='';
+              end;
+         end;
+     end;
+end;
+
+procedure TFrmGrupo.dsgruposDataChange(Sender: TObject; Field: TField);
+begin
+  produtos_composto.close;
+  produtos_composto.sql.clear;
+  produtos_composto.sql.add('select L.produto,L.grupo,L.qtd,P.nome');
+  produtos_composto.sql.add('from produtos_composto L, produtos P');
+  produtos_composto.sql.add('where L.produto=P.codigo');
+  produtos_composto.sql.add('and L.grupo = '+chr(39)+gruposcodigo.Value+chr(39));
+  produtos_composto.sql.add('order by P.nome');
+  produtos_composto.open;
+end;
+
+procedure TFrmGrupo.edqtdExit(Sender: TObject);
+begin
+  if (edproduto.Text<>'') and (edqtd.Text<>'') then
+     begin
+       dm.produtos_composto.close;
+       dm.produtos_composto.sql.clear;
+       dm.produtos_composto.sql.add('select * from produtos_composto');
+       dm.produtos_composto.sql.add('where (1=2)');
+       dm.produtos_composto.open;
+       dm.produtos_composto.Insert;
+       dm.produtos_compostoproduto.Value:=StrToInt(edproduto.Text);
+       dm.produtos_compostogrupo.Value:=mecodigo.Text;
+       dm.produtos_compostoqtd.Value:=StrToInt(edqtd.Text);
+       dm.produtos_composto.Post;
+
+       R_hora:=TimeToStr(time);
+       dm.rastro.Close;
+       dm.rastro.SQL.Clear;
+       dm.rastro.SQL.Add('select * from rastro');
+       dm.rastro.SQL.Add('where (1=2)');
+       dm.rastro.Open;
+       dm.rastro.Insert;
+       dm.rastrodata.Value:=date;
+       dm.rastrohora.Value:=R_hora;
+       dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+       dm.rastrorotina.Value:='PROD_COMPOSTO';
+       dm.rastrooperacao.Value:='I';
+       dm.rastrohistorico.Value:=mecodigo.Text+' '+
+       lbproduto.Caption;
+       dm.rastrofavorecido.Value:=StrToInt(edproduto.text);
+       dm.rastroobs.Value:=edqtd.Text;
+       dm.rastro.Post;
+       dm.rastro.Close;
+
+       produtos_composto.Close;
+       produtos_composto.Open;
+       edproduto.Text:='';edqtd.Text:='';
+       edproduto.SetFocus;
+     end;
+end;
+
+procedure TFrmGrupo.DBGrid2DblClick(Sender: TObject);
+begin
+  if application.messagebox('Deseja apagar o registro?','Gestor',mb_yesno+mb_iconquestion)=id_yes then
+     begin
+       R_hora:=TimeToStr(time);
+       dm.rastro.Close;
+       dm.rastro.SQL.Clear;
+       dm.rastro.SQL.Add('select * from rastro');
+       dm.rastro.SQL.Add('where (1=2)');
+       dm.rastro.Open;
+       dm.rastro.Insert;
+       dm.rastrodata.Value:=date;
+       dm.rastrohora.Value:=R_hora;
+       dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+       dm.rastrorotina.Value:='PROD_COMPOSTO';
+       dm.rastrooperacao.Value:='E';
+       dm.rastrohistorico.Value:=mecodigo.Text+' '+produtos_compostonome.Value;
+       dm.rastrofavorecido.Value:=produtos_compostoproduto.Value;
+       dm.rastroobs.Value:=IntToStr(produtos_compostoqtd.Value);
+       dm.rastro.Post;
+       dm.rastro.Close;
+
+       qratualizar.Close;
+       qratualizar.SQL.Clear;
+       qratualizar.SQL.Add('delete from produtos_composto');
+       qratualizar.sql.add('where grupo = '+chr(39)+mecodigo.text+chr(39));
+       qratualizar.sql.add('and produto = '+IntToStr(produtos_compostoproduto.Value));
+       qratualizar.ExecSQL;
+       produtos_composto.Close;
+       produtos_composto.open;
+     end;
+end;
+
+procedure TFrmGrupo.InativarProdutosdoGrupo1Click(Sender: TObject);
+begin
+  if Application.Messagebox ('Confirma Operação?','Ativar Produtos Desse Grupo', mb_yesno+mb_iconquestion+MB_DEFBUTTON2)=id_yes then
+     begin
+       R_hora:=TimeToStr(time);
+       dm.rastro.Close;
+       dm.rastro.SQL.Clear;
+       dm.rastro.SQL.Add('select * from rastro');
+       dm.rastro.SQL.Add('where (1=2)');
+       dm.rastro.Open;
+       dm.rastro.Insert;
+       dm.rastrodata.Value:=date;
+       dm.rastrohora.Value:=R_hora;
+       dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+       dm.rastrorotina.Value:='PRODUTOS';
+       dm.rastrooperacao.Value:='A';
+       dm.rastrohistorico.Value:='Ativação do Grupo: '+dm.gruposcodigo.Value+' - '+dm.gruposdescricao.Value;
+       dm.rastro.Post;
+       dm.rastro.Close;
+
+       texto:='S';
+       qratualizar.close;
+       qratualizar.sql.clear;
+       qratualizar.sql.add('update produtos set');
+       qratualizar.sql.add('ativo = :texto');
+       qratualizar.sql.add('where grupo = '+chr(39)+dm.gruposcodigo.Value+chr(39));
+       qratualizar.Params[0].Value := texto;
+       qratualizar.ExecSQL;
+
+       showmessage('Processamento Efetuado!!!'); 
+     end;
+end;
+
+end.
+
+
+

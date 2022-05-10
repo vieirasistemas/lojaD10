@@ -1,0 +1,891 @@
+unit UnitFrmcontascorrentes;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, EditAlinhado, ExtCtrls, DB, DBTables,
+  ZAbstractRODataset, ZAbstractDataset, ZDataset;
+
+type
+  TFrmcontascorrentes = class(TForm)
+    Panel3: TPanel;
+    btnovo: TBitBtn;
+    btgravar: TBitBtn;
+    btalterar: TBitBtn;
+    btexcluir: TBitBtn;
+    btrelatorio: TBitBtn;
+    btcancelar: TBitBtn;
+    P_Dados: TPanel;
+    Label1: TLabel;
+    EdConta: TEdit;
+    Label2: TLabel;
+    EdDescricao: TEdit;
+    Label4: TLabel;
+    EdCarteira: TEdit;
+    Label5: TLabel;
+    EdNossoNum: TEdit;
+    Label3: TLabel;
+    EdConvenio: TEdit;
+    Label6: TLabel;
+    EdBanco: TEdit;
+    Label7: TLabel;
+    EdAgencia: TEdit;
+    Label8: TLabel;
+    EdAgenciaD: TEdit;
+    Label10: TLabel;
+    EdCC: TEdit;
+    Label9: TLabel;
+    EdCCD: TEdit;
+    Label11: TLabel;
+    edagcc: TEdit;
+    Label12: TLabel;
+    edpath: TEdit;
+    Label13: TLabel;
+    EdSaldoAnt: TEditAlinh;
+    Label15: TLabel;
+    Label16: TLabel;
+    Label29: TLabel;
+    Label14: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
+    Label26: TLabel;
+    Label27: TLabel;
+    Label28: TLabel;
+    EdEntJan: TEditAlinh;
+    edSaiJan: TEditAlinh;
+    edSldJan: TEditAlinh;
+    EdEntFev: TEditAlinh;
+    edSaiFev: TEditAlinh;
+    edSldFev: TEditAlinh;
+    EdEntMar: TEditAlinh;
+    edSaiMar: TEditAlinh;
+    edSldMar: TEditAlinh;
+    EdEntAbr: TEditAlinh;
+    edSaiAbr: TEditAlinh;
+    edSldAbr: TEditAlinh;
+    EdEntMai: TEditAlinh;
+    edSaiMai: TEditAlinh;
+    edSldMai: TEditAlinh;
+    EdEntJun: TEditAlinh;
+    edSaiJun: TEditAlinh;
+    edSldJun: TEditAlinh;
+    EdEntJul: TEditAlinh;
+    edSaiJul: TEditAlinh;
+    edSldJul: TEditAlinh;
+    EdEntAgo: TEditAlinh;
+    edSaiAgo: TEditAlinh;
+    edSldAgo: TEditAlinh;
+    EdEntSet: TEditAlinh;
+    edSaiSet: TEditAlinh;
+    edSldSet: TEditAlinh;
+    EdEntOut: TEditAlinh;
+    edSaiOut: TEditAlinh;
+    edSldOut: TEditAlinh;
+    EdEntNov: TEditAlinh;
+    edSaiNov: TEditAlinh;
+    edSldNov: TEditAlinh;
+    EdEntDez: TEditAlinh;
+    edSaiDez: TEditAlinh;
+    edSldDez: TEditAlinh;
+    btprimeiro: TBitBtn;
+    btanterior: TBitBtn;
+    btproximo: TBitBtn;
+    btultimo: TBitBtn;
+    qratualizar: TZQuery;
+    BitBtn1: TBitBtn;
+    Label25: TLabel;
+    edcontacontabil: TEdit;
+    Label30: TLabel;
+    edagccD: TEdit;
+    Label31: TLabel;
+    edano: TEdit;
+    procedure btnovoClick(Sender: TObject);
+    procedure btalterarClick(Sender: TObject);
+    procedure btcancelarClick(Sender: TObject);
+    procedure EdContaExit(Sender: TObject);
+    procedure btgravarClick(Sender: TObject);
+    procedure EdSaldoAntExit(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure btprimeiroClick(Sender: TObject);
+    procedure btanteriorClick(Sender: TObject);
+    procedure btproximoClick(Sender: TObject);
+    procedure btultimoClick(Sender: TObject);
+    procedure btexcluirClick(Sender: TObject);
+    procedure btrelatorioClick(Sender: TObject);
+    procedure EdContaEnter(Sender: TObject);
+    procedure EdDescricaoEnter(Sender: TObject);
+    procedure EdCarteiraEnter(Sender: TObject);
+    procedure EdNossoNumEnter(Sender: TObject);
+    procedure EdConvenioEnter(Sender: TObject);
+    procedure EdBancoEnter(Sender: TObject);
+    procedure EdAgenciaEnter(Sender: TObject);
+    procedure EdAgenciaDEnter(Sender: TObject);
+    procedure EdCCEnter(Sender: TObject);
+    procedure EdCCDEnter(Sender: TObject);
+    procedure edagccEnter(Sender: TObject);
+    procedure edpathEnter(Sender: TObject);
+    procedure EdSaldoAntEnter(Sender: TObject);
+    procedure EdDescricaoExit(Sender: TObject);
+    procedure EdCarteiraExit(Sender: TObject);
+    procedure EdNossoNumExit(Sender: TObject);
+    procedure EdConvenioExit(Sender: TObject);
+    procedure EdBancoExit(Sender: TObject);
+    procedure EdAgenciaExit(Sender: TObject);
+    procedure EdAgenciaDExit(Sender: TObject);
+    procedure EdCCExit(Sender: TObject);
+    procedure EdCCDExit(Sender: TObject);
+    procedure edagccExit(Sender: TObject);
+    procedure edpathExit(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure edanoExit(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Frmcontascorrentes: TFrmcontascorrentes;
+  i,opcao:integer;
+  R_hora:STRING;
+  C_SaldoAnt:real;
+
+implementation
+
+uses Unitdm, UnitFrmRelCCImp, UnitFrmPrincipal;
+
+{$R *.dfm}
+
+function StringToFloat(s : string) : Extended;
+{ Filtra uma string qualquer, convertendo as suas partes
+  numéricas para sua representação decimal, por exemplo:
+  'R$ 1.200,00' para 1200,00 '1AB34TZ' para 134}
+var
+  i :Integer;
+  t : string;
+  SeenDecimal,SeenSgn : Boolean;
+begin
+  t := '';
+  SeenDecimal := False;
+  SeenSgn := False;
+  {Percorre os caracteres da string:}
+  for i := Length(s) downto 0 do
+  {Filtra a string, aceitando somente números e separador decimal:}
+  if (s[i] in ['0'..'9', '-','+',DecimalSeparator]) then
+  begin
+  if (s[i] = DecimalSeparator) and (not SeenDecimal) then
+  begin
+  t := s[i] + t;
+  SeenDecimal := True;
+  end
+  else if (s[i] in ['+','-']) and (not SeenSgn) and (i = 1) then
+  begin
+  t := s[i] + t;
+  SeenSgn := True;
+  end
+  else if s[i] in ['0'..'9'] then
+  begin
+  t := s[i] + t;
+  end;
+  end;
+  Result := StrToFloat(t);
+end;
+
+procedure desabilita;
+begin
+        Frmcontascorrentes.btprimeiro.enabled:=false;
+        Frmcontascorrentes.btanterior.enabled:=false;
+        Frmcontascorrentes.btproximo.enabled:=false;
+        Frmcontascorrentes.btultimo.enabled:=false;
+        Frmcontascorrentes.btnovo.enabled:=false;
+        Frmcontascorrentes.btalterar.enabled:=false;
+        Frmcontascorrentes.btexcluir.enabled:=false;
+        Frmcontascorrentes.btrelatorio.enabled:=false;
+        Frmcontascorrentes.btgravar.enabled:=true;
+        Frmcontascorrentes.btcancelar.Caption:='Cancelar';
+        Frmcontascorrentes.P_Dados.enabled:=true;
+end;
+
+procedure habilita;
+begin
+        Frmcontascorrentes.btprimeiro.enabled:=true;
+        Frmcontascorrentes.btanterior.enabled:=true;
+        Frmcontascorrentes.btproximo.enabled:=true;
+        Frmcontascorrentes.btultimo.enabled:=true;
+        Frmcontascorrentes.btnovo.enabled:=true;
+        Frmcontascorrentes.btalterar.enabled:=true;
+        Frmcontascorrentes.btexcluir.enabled:=true;
+        Frmcontascorrentes.btrelatorio.enabled:=true;
+        Frmcontascorrentes.btcancelar.Caption:='Sair';
+        Frmcontascorrentes.btgravar.enabled:=false;
+        Frmcontascorrentes.P_Dados.enabled:=false;
+end;
+
+procedure Limpar;
+begin
+        Frmcontascorrentes.EdConta.text:='';
+        Frmcontascorrentes.EdDescricao.text:='';
+        Frmcontascorrentes.edConvenio.text:='';
+        Frmcontascorrentes.edCarteira.text:='';
+        Frmcontascorrentes.edNossoNum.text:='';
+        Frmcontascorrentes.edBanco.text:='';
+        Frmcontascorrentes.edAgencia.text:='';
+        Frmcontascorrentes.edAgenciaD.text:='';
+        Frmcontascorrentes.edCC.text:='';
+        Frmcontascorrentes.edCCD.text:='';
+        Frmcontascorrentes.edagcc.text:='';
+        Frmcontascorrentes.edpath.text:='';
+        Frmcontascorrentes.edcontacontabil.text:='';
+        Frmcontascorrentes.edSaldoAnt.text:='';
+        Frmcontascorrentes.edSldJan.text:='';
+        Frmcontascorrentes.edSldFev.text:='';
+        Frmcontascorrentes.edSldMar.text:='';
+        Frmcontascorrentes.edSldAbr.text:='';
+        Frmcontascorrentes.edSldMai.text:='';
+        Frmcontascorrentes.edSldJun.text:='';
+        Frmcontascorrentes.edSldJul.text:='';
+        Frmcontascorrentes.edSldAgo.text:='';
+        Frmcontascorrentes.edSldSet.text:='';
+        Frmcontascorrentes.edSldOut.text:='';
+        Frmcontascorrentes.edSldNov.text:='';
+        Frmcontascorrentes.edSldDez.text:='';
+        Frmcontascorrentes.edSaiJan.text:='';
+        Frmcontascorrentes.edSaiFev.text:='';
+        Frmcontascorrentes.edSaiMar.text:='';
+        Frmcontascorrentes.edSaiAbr.text:='';
+        Frmcontascorrentes.edSaiMai.text:='';
+        Frmcontascorrentes.edSaiJun.text:='';
+        Frmcontascorrentes.edSaiJul.text:='';
+        Frmcontascorrentes.edSaiAgo.text:='';
+        Frmcontascorrentes.edSaiSet.text:='';
+        Frmcontascorrentes.edSaiOut.text:='';
+        Frmcontascorrentes.edSaiNov.text:='';
+        Frmcontascorrentes.edSaiDez.text:='';
+        Frmcontascorrentes.edEntJan.text:='';
+        Frmcontascorrentes.edEntFev.text:='';
+        Frmcontascorrentes.edEntMar.text:='';
+        Frmcontascorrentes.edEntAbr.text:='';
+        Frmcontascorrentes.edEntMai.text:='';
+        Frmcontascorrentes.edEntJun.text:='';
+        Frmcontascorrentes.edEntJul.text:='';
+        Frmcontascorrentes.edEntAgo.text:='';
+        Frmcontascorrentes.edEntSet.text:='';
+        Frmcontascorrentes.edEntOut.text:='';
+        Frmcontascorrentes.edEntNov.text:='';
+        Frmcontascorrentes.edEntDez.text:='';
+end;
+
+procedure atualiza;
+begin
+  Frmcontascorrentes.EdConta.text:=dm.contascorrenteconta.value;
+  Frmcontascorrentes.EdDescricao.text:=dm.contascorrentedescricao.Value;
+  Frmcontascorrentes.edConvenio.text:=IntToStr(dm.contascorrenteconvenio.Value);
+  Frmcontascorrentes.edCarteira.text:=IntToStr(dm.contascorrentecarteira.Value);
+  Frmcontascorrentes.edNossoNum.text:=FloatToStr(dm.contascorrenteN_Numero.Value);
+  Frmcontascorrentes.edBanco.text:=IntToStr(dm.contascorrentebanco.Value);
+  Frmcontascorrentes.edAgencia.text:=IntToStr(dm.contascorrenteagencia.Value);
+  Frmcontascorrentes.edAgenciaD.text:=dm.contascorrenteagenciad.Value;
+  if dm.contascorrentecontacorrente.Value>0 then
+     Frmcontascorrentes.edCC.text:=IntToStr(dm.contascorrentecontacorrente.Value)
+  else
+     Frmcontascorrentes.edCC.text:='';
+  if dm.contascorrentecontacontabil.Value>0 then
+     Frmcontascorrentes.edcontacontabil.text:=IntToStr(dm.contascorrentecontacontabil.Value)
+  else
+     Frmcontascorrentes.edcontacontabil.text:='';
+  Frmcontascorrentes.edCCD.text:=dm.contascorrentecontacorrented.Value;
+  Frmcontascorrentes.edagcc.text:=dm.contascorrenteAgenciaCC.Value;
+  Frmcontascorrentes.edagccD.text:=dm.contascorrenteAgenciaCCD.Value;
+  Frmcontascorrentes.edpath.text:=dm.contascorrentepathretorno.Value;
+
+  dm.contascorrente_saldo.Close;
+  dm.contascorrente_saldo.SQL.Clear;
+  dm.contascorrente_saldo.SQL.Add('select * from contascorrente_saldo');
+  dm.contascorrente_saldo.SQL.Add('where (conta ='+chr(39)+Frmcontascorrentes.EdConta.text+chr(39)+')');
+  dm.contascorrente_saldo.SQL.Add('and (ano ='+chr(39)+Frmcontascorrentes.edano.Text+chr(39)+')');
+  dm.contascorrente_saldo.open;
+
+  Frmcontascorrentes.EdSaldoAnt.Text:=formatfloat('#,##0.00',dm.contascorrente_saldoSaldoAnt.value);
+  Frmcontascorrentes.EdEntJan.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred1.value);
+  Frmcontascorrentes.EdEntFev.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred2.value);
+  Frmcontascorrentes.EdEntMar.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred3.value);
+  Frmcontascorrentes.EdEntAbr.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred4.value);
+  Frmcontascorrentes.EdEntMai.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred5.value);
+  Frmcontascorrentes.EdEntJun.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred6.value);
+  Frmcontascorrentes.EdEntJul.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred7.value);
+  Frmcontascorrentes.EdEntAgo.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred8.value);
+  Frmcontascorrentes.EdEntSet.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred9.value);
+  Frmcontascorrentes.EdEntOut.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred10.value);
+  Frmcontascorrentes.EdEntNov.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred11.value);
+  Frmcontascorrentes.EdEntDez.Text:=formatfloat('#,##0.00',dm.contascorrente_saldocred12.value);
+  Frmcontascorrentes.EdSaiJan.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb1.value);
+  Frmcontascorrentes.EdSaiFev.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb2.value);
+  Frmcontascorrentes.EdSaiMar.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb3.value);
+  Frmcontascorrentes.EdSaiAbr.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb4.value);
+  Frmcontascorrentes.EdSaiMai.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb5.value);
+  Frmcontascorrentes.EdSaiJun.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb6.value);
+  Frmcontascorrentes.EdSaiJul.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb7.value);
+  Frmcontascorrentes.EdSaiAgo.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb8.value);
+  Frmcontascorrentes.EdSaiSet.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb9.value);
+  Frmcontascorrentes.EdSaiOut.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb10.value);
+  Frmcontascorrentes.EdSaiNov.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb11.value);
+  Frmcontascorrentes.EdSaiDez.Text:=formatfloat('#,##0.00',dm.contascorrente_saldodeb12.value);
+  Frmcontascorrentes.EdSldJan.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value-dm.contascorrente_saldodeb1.value);
+  Frmcontascorrentes.EdSldFev.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value-dm.contascorrente_saldodeb1.value-
+  dm.contascorrente_saldodeb2.value);
+  Frmcontascorrentes.EdSldMar.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value+dm.contascorrente_saldocred3.value-
+  dm.contascorrente_saldodeb1.value-dm.contascorrente_saldodeb2.value-dm.contascorrente_saldodeb3.value);
+  Frmcontascorrentes.EdSldAbr.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value+dm.contascorrente_saldocred3.value+
+  dm.contascorrente_saldocred4.value-dm.contascorrente_saldodeb1.value-dm.contascorrente_saldodeb2.value-
+  dm.contascorrente_saldodeb3.value-dm.contascorrente_saldodeb4.value);
+  Frmcontascorrentes.EdSldMai.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value+dm.contascorrente_saldocred3.value+
+  dm.contascorrente_saldocred4.value+dm.contascorrente_saldocred5.value-dm.contascorrente_saldodeb1.value-
+  dm.contascorrente_saldodeb2.value-dm.contascorrente_saldodeb3.value-dm.contascorrente_saldodeb4.value-
+  dm.contascorrente_saldodeb5.value);
+  Frmcontascorrentes.EdSldJun.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value+dm.contascorrente_saldocred3.value+
+  dm.contascorrente_saldocred4.value+dm.contascorrente_saldocred5.value+dm.contascorrente_saldocred6.value-
+  dm.contascorrente_saldodeb1.value-dm.contascorrente_saldodeb2.value-dm.contascorrente_saldodeb3.value-
+  dm.contascorrente_saldodeb4.value-dm.contascorrente_saldodeb5.value-dm.contascorrente_saldodeb6.value);
+  Frmcontascorrentes.EdSldJul.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value+dm.contascorrente_saldocred3.value+
+  dm.contascorrente_saldocred4.value+dm.contascorrente_saldocred5.value+dm.contascorrente_saldocred6.value+
+  dm.contascorrente_saldocred7.value-dm.contascorrente_saldodeb1.value-dm.contascorrente_saldodeb2.value-
+  dm.contascorrente_saldodeb3.value-dm.contascorrente_saldodeb4.value-dm.contascorrente_saldodeb5.value-
+  dm.contascorrente_saldodeb6.value-dm.contascorrente_saldodeb7.value);
+  Frmcontascorrentes.EdSldAgo.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value+dm.contascorrente_saldocred3.value+
+  dm.contascorrente_saldocred4.value+dm.contascorrente_saldocred5.value+dm.contascorrente_saldocred6.value+
+  dm.contascorrente_saldocred7.value+dm.contascorrente_saldocred8.value-dm.contascorrente_saldodeb1.value-
+  dm.contascorrente_saldodeb2.value-dm.contascorrente_saldodeb3.value-dm.contascorrente_saldodeb4.value-
+  dm.contascorrente_saldodeb5.value-dm.contascorrente_saldodeb6.value-dm.contascorrente_saldodeb7.value-
+  dm.contascorrente_saldodeb8.value);
+  Frmcontascorrentes.EdSldSet.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value+dm.contascorrente_saldocred3.value+
+  dm.contascorrente_saldocred4.value+dm.contascorrente_saldocred5.value+dm.contascorrente_saldocred6.value+
+  dm.contascorrente_saldocred7.value+dm.contascorrente_saldocred8.value+dm.contascorrente_saldocred9.value-
+  dm.contascorrente_saldodeb1.value-dm.contascorrente_saldodeb2.value-dm.contascorrente_saldodeb3.value-
+  dm.contascorrente_saldodeb4.value-dm.contascorrente_saldodeb5.value-dm.contascorrente_saldodeb6.value-
+  dm.contascorrente_saldodeb7.value-dm.contascorrente_saldodeb8.value-dm.contascorrente_saldodeb9.value);
+  Frmcontascorrentes.EdSldOut.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value+dm.contascorrente_saldocred3.value+
+  dm.contascorrente_saldocred4.value+dm.contascorrente_saldocred5.value+dm.contascorrente_saldocred6.value+
+  dm.contascorrente_saldocred7.value+dm.contascorrente_saldocred8.value+dm.contascorrente_saldocred9.value+
+  dm.contascorrente_saldocred10.value-dm.contascorrente_saldodeb1.value-dm.contascorrente_saldodeb2.value-
+  dm.contascorrente_saldodeb3.value-dm.contascorrente_saldodeb4.value-dm.contascorrente_saldodeb5.value-
+  dm.contascorrente_saldodeb6.value-dm.contascorrente_saldodeb7.value-dm.contascorrente_saldodeb8.value-
+  dm.contascorrente_saldodeb9.value-dm.contascorrente_saldodeb10.value);
+  Frmcontascorrentes.EdSldNov.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value+dm.contascorrente_saldocred3.value+
+  dm.contascorrente_saldocred4.value+dm.contascorrente_saldocred5.value+dm.contascorrente_saldocred6.value+
+  dm.contascorrente_saldocred7.value+dm.contascorrente_saldocred8.value+dm.contascorrente_saldocred9.value+
+  dm.contascorrente_saldocred10.value+dm.contascorrente_saldocred11.value-dm.contascorrente_saldodeb1.value-
+  dm.contascorrente_saldodeb2.value-dm.contascorrente_saldodeb3.value-dm.contascorrente_saldodeb4.value-
+  dm.contascorrente_saldodeb5.value-dm.contascorrente_saldodeb6.value-dm.contascorrente_saldodeb7.value-
+  dm.contascorrente_saldodeb8.value-dm.contascorrente_saldodeb9.value-dm.contascorrente_saldodeb10.value-
+  dm.contascorrente_saldodeb11.value);
+  Frmcontascorrentes.EdSldDez.Text:=formatfloat('#,##0.00',dm.contascorrente_saldosaldoant.value+
+  dm.contascorrente_saldocred1.value+dm.contascorrente_saldocred2.value+dm.contascorrente_saldocred3.value+
+  dm.contascorrente_saldocred4.value+dm.contascorrente_saldocred5.value+dm.contascorrente_saldocred6.value+
+  dm.contascorrente_saldocred7.value+dm.contascorrente_saldocred8.value+dm.contascorrente_saldocred9.value+
+  dm.contascorrente_saldocred10.value+dm.contascorrente_saldocred11.value+dm.contascorrente_saldocred12.value-
+  dm.contascorrente_saldodeb1.value-dm.contascorrente_saldodeb2.value-dm.contascorrente_saldodeb3.value-
+  dm.contascorrente_saldodeb4.value-dm.contascorrente_saldodeb5.value-dm.contascorrente_saldodeb6.value-
+  dm.contascorrente_saldodeb7.value-dm.contascorrente_saldodeb8.value-dm.contascorrente_saldodeb9.value-
+  dm.contascorrente_saldodeb10.value-dm.contascorrente_saldodeb11.value-dm.contascorrente_saldodeb12.value);
+end;
+
+procedure TFrmcontascorrentes.btnovoClick(Sender: TObject);
+begin
+        desabilita;
+        opcao:=1;
+        limpar;
+        EdConta.SetFocus;
+end;
+
+procedure TFrmcontascorrentes.btalterarClick(Sender: TObject);
+begin
+        desabilita;
+        opcao:=2;
+        EdDescricao.SetFocus;
+end;
+
+procedure TFrmcontascorrentes.btcancelarClick(Sender: TObject);
+begin
+        if btnovo.Enabled=false then
+           begin
+                limpar;
+                habilita;
+           end
+           else
+                close;
+end;
+
+procedure TFrmcontascorrentes.EdContaExit(Sender: TObject);
+begin
+        if edconta.text<>'' then
+           begin
+              if eddescricao.text='' then
+                 begin
+                    if dm.contascorrente.Locate('conta',edconta.text,[]) then
+                       begin
+                         application.MessageBox('Conta Corrente já Cadastrada','Atenção',mb_ok);
+                         btcancelar.Click;
+                       end;
+                 end;
+           end;
+  edconta.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.btgravarClick(Sender: TObject);
+var
+C_carteira,C_contacontabil,C_contacorrente,
+C_convenio,C_banco,C_agencia:integer;
+C_descricao,C_agenciad,C_contacorrented,
+C_AgenciaCC,C_pathretorno,
+C_AgenciaCCD:string;
+C_N_Numero,C_SaldoAnt:real;
+begin
+      if opcao=1 then
+         begin
+           dm.contascorrente.Insert;
+           dm.contascorrenteconta.Value:=edconta.text;
+           dm.contascorrentedescricao.value:=eddescricao.text;
+           if edcarteira.text<>'' then
+              dm.contascorrentecarteira.value:=StrToInt(edcarteira.text);
+           if EdNossoNum.text<>'' then
+              dm.contascorrenteN_Numero.value:=StrToFloat(EdNossoNum.text);
+           if EdConvenio.text<>'' then
+              dm.contascorrenteconvenio.value:=StrToInt(EdConvenio.text);
+           if EdBanco.text<>'' then
+              dm.contascorrentebanco.Value:=StrToInt(EdBanco.Text);
+           if EdAgencia.text<>'' then
+              dm.contascorrenteagencia.Value:=StrToInt(EdAgencia.Text);
+           dm.contascorrenteagenciad.Value:=EdAgenciaD.text;
+           if edcc.text<>'' then
+              dm.contascorrentecontacorrente.value:=StrToInt(EdCC.Text);
+           dm.contascorrentecontacorrented.Value:=EdCCD.text;
+           dm.contascorrenteAgenciaCC.Value:=edagcc.text;
+           dm.contascorrenteAgenciaCCD.Value:=edagccD.text;
+           dm.contascorrentepathretorno.Value:=edpath.text;
+           if edcontacontabil.text<>'' then
+              dm.contascorrentecontacontabil.value:=StrToInt(edcontacontabil.Text);
+           dm.contascorrente.Post;
+
+          dm.contascorrente_saldo.Close;
+          dm.contascorrente_saldo.SQL.Clear;
+          dm.contascorrente_saldo.SQL.Add('select * from contascorrente_saldo');
+          dm.contascorrente_saldo.SQL.Add('where (conta ='+chr(39)+EdConta.text+chr(39)+')');
+          dm.contascorrente_saldo.SQL.Add('and (ano ='+chr(39)+edano.Text+chr(39)+')');
+          dm.contascorrente_saldo.open;
+          dm.contascorrente_saldo.Insert;
+          dm.contascorrente_saldoconta.Value:=EdConta.text;
+          dm.contascorrente_saldoano.Value:=edano.text;
+          if EdSaldoAnt.text<>'' then
+             dm.contascorrente_saldoSaldoAnt.value:=StringToFloat(EdSaldoAnt.Text)
+          else
+             dm.contascorrente_saldoSaldoAnt.value:=0;
+          dm.contascorrente_saldo.Post;
+
+           R_hora:=TimeToStr(time);
+           dm.rastro.Close;
+           dm.rastro.SQL.Clear;
+           dm.rastro.SQL.Add('select * from rastro');
+           dm.rastro.SQL.Add('where (1=2)');
+           dm.rastro.Open;
+           dm.rastro.Insert;
+           dm.rastrodata.Value:=date;
+           dm.rastrohora.Value:=R_hora;
+           dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+           dm.rastrorotina.Value:='CONTAS CORRENTE';
+           dm.rastrooperacao.Value:='I';
+           dm.rastrohistorico.Value:=EdConta.Text+' '+
+           EdDescricao.Text;
+           dm.rastro.Post;
+           dm.rastro.Close;
+         end
+         else
+         begin
+           C_carteira:=0;
+           C_convenio:=0;C_banco:=0;C_agencia:=0;
+           C_N_Numero:=0;C_SaldoAnt:=0;C_contacontabil:=0;
+           C_contacorrente:=0;
+           
+           C_descricao:=eddescricao.text;
+           if edcarteira.text<>'' then
+              C_carteira:=StrToInt(edcarteira.text);
+           if EdNossoNum.text<>'' then
+              C_N_Numero:=StrToFloat(EdNossoNum.text);
+           if EdConvenio.text<>'' then
+              C_convenio:=StrToInt(EdConvenio.text);
+           if EdBanco.text<>'' then
+              C_banco:=StrToInt(EdBanco.Text);
+           if EdAgencia.text<>'' then
+              C_agencia:=StrToInt(EdAgencia.Text);
+           C_agenciad:=EdAgenciaD.text;
+           if EdCC.Text<>'' then
+              C_contacorrente:=StrToInt(EdCC.Text);
+           C_contacorrented:=EdCCD.text;
+           C_AgenciaCC:=edagcc.text;
+           C_AgenciaCCD:=edagccD.text;
+           C_pathretorno:=edpath.text;
+           if edcontacontabil.text<>'' then
+              C_contacontabil:=StrToInt(edcontacontabil.Text);
+
+           qratualizar.close;
+           qratualizar.sql.clear;
+           qratualizar.sql.add('update contascorrente set');
+           qratualizar.sql.add('descricao = :C_descricao,');
+           qratualizar.sql.add('carteira = :C_carteira,');
+           qratualizar.sql.add('N_Numero = :C_N_Numero,');
+           qratualizar.sql.add('convenio = :C_convenio,');
+           qratualizar.sql.add('banco = :C_banco,');
+           qratualizar.sql.add('agencia = :C_agencia,');
+           qratualizar.sql.add('agenciad = :C_agenciad,');
+           qratualizar.sql.add('contacorrente = :C_contacorrente,');
+           qratualizar.sql.add('contacorrented = :C_contacorrented,');
+           qratualizar.sql.add('AgenciaCC = :C_AgenciaCC,');
+           qratualizar.sql.add('pathretorno = :C_pathretorno,');
+           qratualizar.sql.add('contacontabil = :C_contacontabil,');
+           qratualizar.sql.add('AgenciaCCD = :C_AgenciaCCD');
+           qratualizar.sql.add('where conta = '+chr(39)+edconta.text+chr(39));
+           qratualizar.Params[0].Value := C_descricao;
+           qratualizar.Params[1].Value := C_carteira;
+           qratualizar.Params[2].Value := C_N_Numero;
+           qratualizar.Params[3].Value := C_convenio;
+           qratualizar.Params[4].Value := C_banco;
+           qratualizar.Params[5].Value := C_agencia;
+           qratualizar.Params[6].Value := C_agenciad;
+           qratualizar.Params[7].Value := C_contacorrente;
+           qratualizar.Params[8].Value := C_contacorrented;
+           qratualizar.Params[9].Value := C_AgenciaCC;
+           qratualizar.Params[10].Value := C_pathretorno;
+           qratualizar.Params[11].Value := C_contacontabil;
+           qratualizar.Params[12].Value := C_AgenciaCCD;
+           qratualizar.ExecSQL;
+
+           if EdSaldoAnt.text<>'' then
+              begin
+                C_SaldoAnt:=StringToFloat(EdSaldoAnt.Text);
+                qratualizar.close;
+                qratualizar.sql.clear;
+                qratualizar.sql.add('update contascorrente_saldo set');
+                qratualizar.sql.add('SaldoAnt = :C_SaldoAnt');
+                qratualizar.SQL.Add('where (conta ='+chr(39)+EdConta.text+chr(39)+')');
+                qratualizar.SQL.Add('and (ano ='+chr(39)+edano.Text+chr(39)+')');
+                qratualizar.Params[0].Value := C_SaldoAnt;
+                qratualizar.ExecSQL;
+              end;
+
+           R_hora:=TimeToStr(time);
+
+           dm.rastro.Close;
+           dm.rastro.SQL.Clear;
+           dm.rastro.SQL.Add('select * from rastro');
+           dm.rastro.SQL.Add('where (1=2)');
+           dm.rastro.Open;
+           dm.rastro.Insert;
+           dm.rastrodata.Value:=date;
+           dm.rastrohora.Value:=R_hora;
+           dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+           dm.rastrorotina.Value:='CONTAS CORRENTE';
+           dm.rastrooperacao.Value:='A';
+           dm.rastrohistorico.Value:=EdConta.Text+' '+
+           EdDescricao.Text;
+           dm.rastro.Post;
+           dm.rastro.Close;
+         end;
+      habilita;
+end;
+
+procedure TFrmcontascorrentes.EdSaldoAntExit(Sender: TObject);
+begin
+  if EdSaldoAnt.text<>'' then
+     EdSaldoAnt.text:=formatfloat('#,##0.00',StringToFloat(EdSaldoAnt.text));
+  EdSaldoAnt.Color:=clWindow;
+  btgravar.Click;
+end;
+
+procedure TFrmcontascorrentes.FormShow(Sender: TObject);
+begin
+      dm.parametros.Close;
+      dm.parametros.Open;
+      dm.contascorrente.Close;
+      dm.contascorrente.SQL.Clear;
+      dm.contascorrente.SQL.Add('select * from contascorrente');
+      dm.contascorrente.open;
+      edano.Text:=formatdatetime('yyyy',DATE);
+      atualiza;
+end;
+
+procedure TFrmcontascorrentes.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+        if Key = CHR(13) Then
+           Begin
+              perform(WM_NextDlgCtl,0,0);
+              Key := CHR(0);
+           End;
+end;
+
+procedure TFrmcontascorrentes.btprimeiroClick(Sender: TObject);
+begin
+        dm.contascorrente.First;
+        atualiza;
+end;
+
+procedure TFrmcontascorrentes.btanteriorClick(Sender: TObject);
+begin
+        dm.contascorrente.prior;
+        atualiza;
+end;
+
+procedure TFrmcontascorrentes.btproximoClick(Sender: TObject);
+begin
+        dm.contascorrente.next;
+        atualiza;
+end;
+
+procedure TFrmcontascorrentes.btultimoClick(Sender: TObject);
+begin
+        dm.contascorrente.last;
+        atualiza;
+end;
+
+procedure TFrmcontascorrentes.btexcluirClick(Sender: TObject);
+begin
+        if edconta.text='' then
+           begin
+              application.MessageBox('Selecione uma Conta','Atenção',mb_ok+mb_iconinformation);
+              btproximo.SetFocus;
+           end
+           else
+           begin
+              if Application.Messagebox ('Deseja excluir o registro?','Atenção', Mb_YesNoCancel+mb_iconquestion) = id_yes then
+                 begin
+                   R_hora:=TimeToStr(time);
+                   dm.rastro.Close;
+                   dm.rastro.SQL.Clear;
+                   dm.rastro.SQL.Add('select * from rastro');
+                   dm.rastro.SQL.Add('where (1=2)');
+                   dm.rastro.Open;
+                   dm.rastro.Insert;
+                   dm.rastrodata.Value:=date;
+                   dm.rastrohora.Value:=R_hora;
+                   dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+                   dm.rastrorotina.Value:='CONTAS CORRENTE';
+                   dm.rastrooperacao.Value:='E';
+                   dm.rastrohistorico.Value:=EdConta.Text+' '+
+                   EdDescricao.Text;
+                   dm.rastro.Post;
+                   dm.rastro.Close;
+
+                   qratualizar.close;
+                   qratualizar.sql.clear;
+                   qratualizar.sql.add('delete from contascorrente');
+                   qratualizar.sql.add('where conta = '+chr(39)+edconta.text+chr(39));
+                   qratualizar.ExecSQL;
+                   dm.contascorrente.Close;
+                   dm.contascorrente.Open;
+                   limpar;
+                 end;
+           end;
+
+end;
+
+procedure TFrmcontascorrentes.btrelatorioClick(Sender: TObject);
+begin
+      try
+        Application.CreateForm(TFrmRelCCImp, FrmRelCCImp);
+        FrmRelCCImp.showmodal;
+      finally
+        FrmRelCCImp.Release;
+        FrmRelCCImp:=nil;
+      end;
+end;
+
+procedure TFrmcontascorrentes.EdContaEnter(Sender: TObject);
+begin
+  EdConta.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdDescricaoEnter(Sender: TObject);
+begin
+  EdDescricao.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdCarteiraEnter(Sender: TObject);
+begin
+  EdCarteira.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdNossoNumEnter(Sender: TObject);
+begin
+  EdNossoNum.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdConvenioEnter(Sender: TObject);
+begin
+  EdConvenio.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdBancoEnter(Sender: TObject);
+begin
+  EdBanco.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdAgenciaEnter(Sender: TObject);
+begin
+  EdAgencia.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdAgenciaDEnter(Sender: TObject);
+begin
+  EdAgenciaD.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdCCEnter(Sender: TObject);
+begin
+  EdCC.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdCCDEnter(Sender: TObject);
+begin
+  EdCCD.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.edagccEnter(Sender: TObject);
+begin
+  edagcc.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.edpathEnter(Sender: TObject);
+begin
+  edpath.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdSaldoAntEnter(Sender: TObject);
+begin
+  EdSaldoAnt.Color:=$0080FFFF;
+end;
+
+procedure TFrmcontascorrentes.EdDescricaoExit(Sender: TObject);
+begin
+  EdDescricao.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.EdCarteiraExit(Sender: TObject);
+begin
+  EdCarteira.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.EdNossoNumExit(Sender: TObject);
+begin
+  EdNossoNum.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.EdConvenioExit(Sender: TObject);
+begin
+  EdConvenio.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.EdBancoExit(Sender: TObject);
+begin
+  EdBanco.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.EdAgenciaExit(Sender: TObject);
+begin
+  EdAgencia.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.EdAgenciaDExit(Sender: TObject);
+begin
+  EdAgenciaD.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.EdCCExit(Sender: TObject);
+begin
+  EdCC.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.EdCCDExit(Sender: TObject);
+begin
+  EdCCD.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.edagccExit(Sender: TObject);
+begin
+  edagcc.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.edpathExit(Sender: TObject);
+begin
+  edpath.Color:=clWindow;
+end;
+
+procedure TFrmcontascorrentes.BitBtn1Click(Sender: TObject);
+begin
+  if Application.Messagebox ('Ao realizar esse procedimento o Saldo Final de Dezembro será o Saldo Anterior, possibilitando o inicio de um novo ano contábil. Confirma Procedimento?','Iniciar Exercicio', mb_yesno+mb_iconquestion+MB_DEFBUTTON2)=id_yes then
+     begin
+       C_SaldoAnt:=StringToFloat(edSldDez.Text);
+       qratualizar.close;
+       qratualizar.sql.clear;
+       qratualizar.sql.add('update contascorrente set');
+       qratualizar.sql.add('SaldoAnt = :C_SaldoAnt');
+       qratualizar.sql.add('where conta = '+chr(39)+edconta.text+chr(39));
+       qratualizar.Params[0].Value := C_SaldoAnt;
+       qratualizar.ExecSQL;
+       
+       R_hora:=TimeToStr(time);
+       dm.rastro.Close;
+       dm.rastro.SQL.Clear;
+       dm.rastro.SQL.Add('select * from rastro');
+       dm.rastro.SQL.Add('where (1=2)');
+       dm.rastro.Open;
+       dm.rastro.Insert;
+       dm.rastrodata.Value:=date;
+       dm.rastrohora.Value:=R_hora;
+       dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+       dm.rastrorotina.Value:='CONTAS CORRENTE';
+       dm.rastrooperacao.Value:='A';
+       dm.rastrohistorico.Value:=EdConta.Text+' - Inicio do Novo Ano Contábil';
+       dm.rastro.Post;
+       dm.rastro.Close;
+
+       for i:=1 to 12 do
+           begin
+              qratualizar.close;
+              qratualizar.sql.clear;
+              qratualizar.sql.add('update contascorrente set');
+              qratualizar.sql.add('deb'+IntToStr(i)+' = 0,');
+              qratualizar.sql.add('cred'+IntToStr(i)+' = 0');
+              qratualizar.SQL.Add('where (conta ='+chr(39)+edconta.text+chr(39)+')');
+              qratualizar.ExecSQL;
+           end;
+       dm.contascorrente.Close;
+       dm.contascorrente.open;
+       dm.contascorrente.Locate('conta',edconta.text,[]);
+       atualiza;
+     end;
+end;
+
+procedure TFrmcontascorrentes.edanoExit(Sender: TObject);
+begin
+  if edano.Text<>'' then
+     atualiza;
+end;
+
+end.

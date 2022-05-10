@@ -1,0 +1,104 @@
+unit UnitFrmGraficoRecAnual;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, QRCtrls, TeEngine, Series, TeeProcs, Chart,
+  DbChart, QRTEE, QuickRpt, ExtCtrls, jpeg;
+
+type
+  TFrmGraficoRecAnual = class(TForm)
+    Label5: TLabel;
+    edano: TEdit;
+    bt1: TBitBtn;
+    bt2: TBitBtn;
+    QuickRep1: TQuickRep;
+    TitleBand2: TQRBand;
+    QRChart1: TQRChart;
+    QRDBChart1: TQRDBChart;
+    Series1: TBarSeries;
+    qrtituloI: TQRLabel;
+    QRImage4: TQRImage;
+    procedure bt2Click(Sender: TObject);
+    procedure bt1Click(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmGraficoRecAnual: TFrmGraficoRecAnual;
+  mes,dia:string;
+  i:integer;
+  v_venda,v_pedido:double;
+
+implementation
+
+uses Unitdm, UnitFrmPrincipal;
+
+{$R *.dfm}
+
+function AnoBiSexto(Ayear: Integer): Boolean;
+begin
+// Verifica se o ano é Bi-Sexto
+Result := (AYear mod 4 = 0) and ((AYear mod 100 <> 0) or
+(AYear mod 400 = 0));
+end;
+
+function DiasPorMes(Ayear, AMonth: Integer): Integer;
+const DaysInMonth: array[1..12] of Integer = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+begin
+Result := DaysInMonth[AMonth];
+if (AMonth = 2) and AnoBiSexto(AYear) then
+Inc(Result);
+end;
+
+procedure TFrmGraficoRecAnual.bt2Click(Sender: TObject);
+begin
+  close;
+end;
+
+procedure TFrmGraficoRecAnual.bt1Click(Sender: TObject);
+begin
+  if edano.Text<>'' then
+     begin
+        qrtituloI.Caption:='GRÁFICO DE VENDAS DO ANO: '+edano.Text+' - OCULOS PICO';
+        series1.Clear;
+        for i:=1 to 12 do
+            begin
+              v_venda:=0;v_pedido:=0;
+              mes:=formatfloat('00',i);
+              dia:=IntToStr(DiasPorMes(StrToInt(edano.text), StrToInt(mes)));
+
+              dm.Totaldocreceber.Close;
+              dm.Totaldocreceber.SQL.Clear;
+              dm.Totaldocreceber.SQL.Add('select sum(total) as Total from venda');
+              dm.Totaldocreceber.SQL.Add('where (fechada= '+chr(39)+'S'+chr(39)+')');
+              dm.Totaldocreceber.SQL.Add('and (data between '+chr(39)+
+              edano.text+'/'+mes+'/01'+chr(39)+' and '+chr(39)+
+              edano.text+'/'+mes+'/'+dia+chr(39)+')');
+              dm.Totaldocreceber.open;
+              v_venda:=dm.TotalDocRecebertotal.Value;
+
+              series1.Add(v_venda, mes+'/'+edano.text, clTeeColor );
+            end;
+         QRChart1.Repaint;
+         QuickRep1.Preview;
+     end
+     else
+       showmessage('Digite o Ano Desejado!!!');
+end;
+
+procedure TFrmGraficoRecAnual.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if key=#13 then
+  begin
+     SelectNext(activecontrol,True,True);
+     key:=#0;
+  end;
+end;
+
+end.
