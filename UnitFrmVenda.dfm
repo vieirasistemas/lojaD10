@@ -102,9 +102,9 @@ object FrmVenda: TFrmVenda
   object Label7: TLabel
     Left = 221
     Top = 35
-    Width = 71
+    Width = 55
     Height = 13
-    Caption = 'Atendimento'
+    Caption = 'N'#186' Venda'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clNavy
     Font.Height = -11
@@ -198,7 +198,7 @@ object FrmVenda: TFrmVenda
           Font.Name = 'Arial'
           Font.Style = []
           Title.Alignment = taCenter
-          Title.Caption = 'Atendimento'
+          Title.Caption = 'N'#186' da Venda'
           Width = 90
           Visible = True
         end
@@ -923,8 +923,8 @@ object FrmVenda: TFrmVenda
     TabOrder = 2
   end
   object QuickRep1: TQuickRep
-    Left = 1200
-    Top = 84
+    Left = 1208
+    Top = 68
     Width = 794
     Height = 1123
     Frame.Color = clBlack
@@ -1527,7 +1527,7 @@ object FrmVenda: TFrmVenda
         FontSize = 9
       end
       object QRLabel21: TQRLabel
-        Left = 336
+        Left = 216
         Top = 126
         Width = 27
         Height = 16
@@ -1538,7 +1538,7 @@ object FrmVenda: TFrmVenda
         Frame.DrawRight = False
         Size.Values = (
           42.333333333333330000
-          889.000000000000000000
+          571.500000000000000000
           333.375000000000000000
           71.437500000000000000)
         Alignment = taLeftJustify
@@ -1577,6 +1577,7 @@ object FrmVenda: TFrmVenda
         AutoSize = False
         AutoStretch = False
         Color = clWhite
+        DataSet = dm.venda
         DataField = 'vendaI'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1589,7 +1590,7 @@ object FrmVenda: TFrmVenda
         FontSize = 9
       end
       object QRDBText19: TQRDBText
-        Left = 371
+        Left = 251
         Top = 126
         Width = 78
         Height = 16
@@ -1600,7 +1601,7 @@ object FrmVenda: TFrmVenda
         Frame.DrawRight = False
         Size.Values = (
           42.333333333333330000
-          981.604166666666700000
+          664.104166666666700000
           333.375000000000000000
           206.375000000000000000)
         Alignment = taLeftJustify
@@ -2075,7 +2076,7 @@ object FrmVenda: TFrmVenda
       object QRDBText26: TQRDBText
         Left = 435
         Top = 91
-        Width = 86
+        Width = 118
         Height = 16
         Frame.Color = clBlack
         Frame.DrawTop = False
@@ -2086,7 +2087,7 @@ object FrmVenda: TFrmVenda
           42.333333333333330000
           1150.937500000000000000
           240.770833333333300000
-          227.541666666666700000)
+          312.208333333333300000)
         Alignment = taLeftJustify
         AlignToBand = False
         AutoSize = False
@@ -2105,9 +2106,9 @@ object FrmVenda: TFrmVenda
         FontSize = 9
       end
       object QRDBText27: TQRDBText
-        Left = 523
+        Left = 563
         Top = 91
-        Width = 86
+        Width = 118
         Height = 16
         Frame.Color = clBlack
         Frame.DrawTop = False
@@ -2116,9 +2117,9 @@ object FrmVenda: TFrmVenda
         Frame.DrawRight = False
         Size.Values = (
           42.333333333333330000
-          1383.770833333333000000
+          1489.604166666667000000
           240.770833333333300000
-          227.541666666666700000)
+          312.208333333333300000)
         Alignment = taLeftJustify
         AlignToBand = False
         AutoSize = False
@@ -2298,7 +2299,7 @@ object FrmVenda: TFrmVenda
       object QRDBText35: TQRDBText
         Left = 416
         Top = 107
-        Width = 137
+        Width = 185
         Height = 16
         Frame.Color = clBlack
         Frame.DrawTop = False
@@ -2309,7 +2310,7 @@ object FrmVenda: TFrmVenda
           42.333333333333330000
           1100.666666666667000000
           283.104166666666700000
-          362.479166666666700000)
+          489.479166666666700000)
         Alignment = taLeftJustify
         AlignToBand = False
         AutoSize = False
@@ -2423,7 +2424,7 @@ object FrmVenda: TFrmVenda
         FontSize = 9
       end
       object QRLabel49: TQRLabel
-        Left = 456
+        Left = 336
         Top = 125
         Width = 80
         Height = 16
@@ -2434,7 +2435,7 @@ object FrmVenda: TFrmVenda
         Frame.DrawRight = False
         Size.Values = (
           42.333333333333330000
-          1206.500000000000000000
+          889.000000000000000000
           330.729166666666700000
           211.666666666666700000)
         Alignment = taLeftJustify
@@ -2454,7 +2455,7 @@ object FrmVenda: TFrmVenda
         FontSize = 9
       end
       object QRDBText38: TQRDBText
-        Left = 544
+        Left = 424
         Top = 125
         Width = 193
         Height = 16
@@ -2465,7 +2466,7 @@ object FrmVenda: TFrmVenda
         Frame.DrawRight = False
         Size.Values = (
           42.333333333333330000
-          1439.333333333333000000
+          1121.833333333333000000
           330.729166666666700000
           510.645833333333300000)
         Alignment = taLeftJustify
@@ -2485,71 +2486,9 @@ object FrmVenda: TFrmVenda
         WordWrap = True
         FontSize = 9
       end
-      object qrcnpj_cpf: TQRLabel
-        Left = 67
-        Top = 91
-        Width = 118
-        Height = 16
-        Frame.Color = clBlack
-        Frame.DrawTop = False
-        Frame.DrawBottom = False
-        Frame.DrawLeft = False
-        Frame.DrawRight = False
-        Size.Values = (
-          42.333333333333330000
-          177.270833333333300000
-          240.770833333333300000
-          312.208333333333300000)
-        Alignment = taLeftJustify
-        AlignToBand = False
-        AutoSize = False
-        AutoStretch = False
-        Caption = '08.805.900/0001-18'
-        Color = clWhite
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'Arial'
-        Font.Style = []
-        ParentFont = False
-        Transparent = False
-        WordWrap = True
-        FontSize = 9
-      end
-      object qrie_rg: TQRLabel
-        Left = 256
-        Top = 91
-        Width = 114
-        Height = 16
-        Frame.Color = clBlack
-        Frame.DrawTop = False
-        Frame.DrawBottom = False
-        Frame.DrawLeft = False
-        Frame.DrawRight = False
-        Size.Values = (
-          42.333333333333330000
-          677.333333333333300000
-          240.770833333333300000
-          301.625000000000000000)
-        Alignment = taLeftJustify
-        AlignToBand = False
-        AutoSize = False
-        AutoStretch = False
-        Caption = ':'
-        Color = clWhite
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'Arial'
-        Font.Style = []
-        ParentFont = False
-        Transparent = False
-        WordWrap = True
-        FontSize = 9
-      end
       object QRLabel5: TQRLabel
-        Left = 213
-        Top = 126
+        Left = 605
+        Top = 107
         Width = 27
         Height = 16
         Frame.Color = clBlack
@@ -2559,8 +2498,8 @@ object FrmVenda: TFrmVenda
         Frame.DrawRight = False
         Size.Values = (
           42.333333333333330000
-          563.562500000000000000
-          333.375000000000000000
+          1600.729166666667000000
+          283.104166666666700000
           71.437500000000000000)
         Alignment = taLeftJustify
         AlignToBand = False
@@ -2579,9 +2518,9 @@ object FrmVenda: TFrmVenda
         FontSize = 9
       end
       object QRDBText2: TQRDBText
-        Left = 243
-        Top = 126
-        Width = 86
+        Left = 635
+        Top = 107
+        Width = 102
         Height = 16
         Frame.Color = clBlack
         Frame.DrawTop = False
@@ -2590,9 +2529,9 @@ object FrmVenda: TFrmVenda
         Frame.DrawRight = False
         Size.Values = (
           42.333333333333330000
-          642.937500000000000000
-          333.375000000000000000
-          227.541666666666700000)
+          1680.104166666667000000
+          283.104166666666700000
+          269.875000000000000000)
         Alignment = taLeftJustify
         AlignToBand = False
         AutoSize = False
@@ -2605,6 +2544,132 @@ object FrmVenda: TFrmVenda
         Font.Height = -12
         Font.Name = 'Arial'
         Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 9
+      end
+      object QRDBText5: TQRDBText
+        Left = 67
+        Top = 91
+        Width = 118
+        Height = 16
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          42.333333333333330000
+          177.270833333333300000
+          240.770833333333300000
+          312.208333333333300000)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = False
+        AutoStretch = False
+        Color = clWhite
+        DataSet = dm.clientes
+        DataField = 'cpf'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 9
+      end
+      object QRDBText6: TQRDBText
+        Left = 259
+        Top = 91
+        Width = 110
+        Height = 16
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          42.333333333333330000
+          685.270833333333300000
+          240.770833333333300000
+          291.041666666666700000)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = False
+        AutoStretch = False
+        Color = clWhite
+        DataSet = dm.clientes
+        DataField = 'rg'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 9
+      end
+      object QRLabel8: TQRLabel
+        Left = 624
+        Top = 125
+        Width = 46
+        Height = 16
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          42.333333333333330000
+          1651.000000000000000000
+          330.729166666666700000
+          121.708333333333300000)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Pedido :'
+        Color = clWhite
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = False
+        WordWrap = True
+        FontSize = 9
+      end
+      object qrpedido: TQRLabel
+        Left = 680
+        Top = 125
+        Width = 46
+        Height = 16
+        Frame.Color = clBlack
+        Frame.DrawTop = False
+        Frame.DrawBottom = False
+        Frame.DrawLeft = False
+        Frame.DrawRight = False
+        Size.Values = (
+          42.333333333333330000
+          1799.166666666667000000
+          330.729166666666700000
+          121.708333333333300000)
+        Alignment = taLeftJustify
+        AlignToBand = False
+        AutoSize = True
+        AutoStretch = False
+        Caption = 'Pedido :'
+        Color = clWhite
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
         ParentFont = False
         Transparent = False
         WordWrap = True
@@ -3217,6 +3282,10 @@ object FrmVenda: TFrmVenda
       Required = True
       Size = 70
     end
+    object qrMovEstoquevlr50: TFloatField
+      FieldName = 'vlr50'
+      DisplayFormat = '#,##0.00'
+    end
   end
   object qratualizar: TZQuery
     Connection = dm.ZConnection1
@@ -3367,6 +3436,20 @@ object FrmVenda: TFrmVenda
   object PopupMenu2: TPopupMenu
     Left = 120
     Top = 96
+    object AlterarCliente1: TMenuItem
+      Caption = 'Alterar Cliente'
+      OnClick = AlterarCliente1Click
+    end
+    object N7: TMenuItem
+      Caption = '-'
+    end
+    object AlterarData1: TMenuItem
+      Caption = 'Alterar Data'
+      OnClick = AlterarData1Click
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
     object AlterarFormadePagamento1: TMenuItem
       Caption = 'Alterar Forma de Pagamento'
       OnClick = AlterarFormadePagamento1Click
@@ -3374,11 +3457,18 @@ object FrmVenda: TFrmVenda
     object N1: TMenuItem
       Caption = '-'
     end
+    object AtualizarListadeProdutosVendiidos1: TMenuItem
+      Caption = 'Atualizar Lista de Produtos Vendidos'
+      OnClick = AtualizarListadeProdutosVendiidos1Click
+    end
+    object N4: TMenuItem
+      Caption = '-'
+    end
     object AtualizarValorPago1: TMenuItem
       Caption = 'Atualizar Valor Pago'
       OnClick = AtualizarValorPago1Click
     end
-    object N7: TMenuItem
+    object N3: TMenuItem
       Caption = '-'
     end
     object EnviarNFE1: TMenuItem

@@ -171,12 +171,21 @@ type
     QRSysData3: TQRSysData;
     QRLabel4: TQRLabel;
     QRDBText1: TQRDBText;
-    qrcnpj_cpf: TQRLabel;
-    qrie_rg: TQRLabel;
     QRLabel5: TQRLabel;
     QRDBText2: TQRDBText;
     lbtotal: TLabel;
     Label5: TLabel;
+    qrMovEstoquevlr50: TFloatField;
+    AlterarCliente1: TMenuItem;
+    N2: TMenuItem;
+    AlterarData1: TMenuItem;
+    N3: TMenuItem;
+    QRDBText5: TQRDBText;
+    QRDBText6: TQRDBText;
+    QRLabel8: TQRLabel;
+    qrpedido: TQRLabel;
+    AtualizarListadeProdutosVendiidos1: TMenuItem;
+    N4: TMenuItem;
     procedure FormShow(Sender: TObject);
     procedure medatainicialExit(Sender: TObject);
     procedure medatafinalExit(Sender: TObject);
@@ -205,6 +214,10 @@ type
     procedure AtualizarValorPago1Click(Sender: TObject);
     procedure DesfazerCancelamento1Click(Sender: TObject);
     procedure AtualizarClientes1Click(Sender: TObject);
+    procedure AlterarCliente1Click(Sender: TObject);
+    procedure AlterarData1Click(Sender: TObject);
+    procedure AtualizarProdutospeloPedido1Click(Sender: TObject);
+    procedure AtualizarListadeProdutosVendiidos1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -302,12 +315,6 @@ begin
   FrmVenda.qratualizar.SQL.Add('where documento = '+chr(39)+FrmVenda.qrconsultavendaI.Value+chr(39));
   FrmVenda.qratualizar.ExecSQL;
 
-  FrmVenda.qratualizar.Close;
-  FrmVenda.qratualizar.SQL.Clear;
-  FrmVenda.qratualizar.SQL.Add('delete from historicoclie');
-  FrmVenda.qratualizar.SQL.Add('where venda = '+chr(39)+FrmVenda.qrconsultavendaI.Value+chr(39));
-  FrmVenda.qratualizar.ExecSQL;
-
   dm.venda.Close;
   dm.venda.SQL.Clear;
   dm.venda.SQL.Add('select * from venda');
@@ -326,12 +333,6 @@ begin
   dm.movestoque.SQL.Add('select * from movestoque');
   dm.movestoque.SQL.Add('where (1=2)');
   dm.movestoque.Open;
-
-  dm.historicoclie.Close;
-  dm.historicoclie.SQL.Clear;
-  dm.historicoclie.SQL.Add('select * from historicoclie');
-  dm.historicoclie.SQL.Add('where (1=2)');
-  dm.historicoclie.Open;
 
   dm.dsprodutos.OnDataChange:=nil;
   while not dm.movvenda.Eof do
@@ -549,7 +550,7 @@ begin
 
    FrmVenda.qrMovEstoque.Close;
    FrmVenda.qrMovEstoque.SQL.Clear;
-   FrmVenda.qrMovEstoque.SQL.Add('select E.documento,E.favorecido,E.produto,E.data,E.TipoMov,');
+   FrmVenda.qrMovEstoque.SQL.Add('select E.documento,E.favorecido,E.produto,E.data,E.TipoMov,E.vlr50,');
    FrmVenda.qrMovEstoque.SQL.Add('E.und,E.qtd,E.VlrUnit,E.VlrTotal,P.nome');
    FrmVenda.qrMovEstoque.SQL.Add('from movestoque E, produtos P');
    FrmVenda.qrMovEstoque.SQL.Add('where (E.produto=P.codigo)');
@@ -571,6 +572,7 @@ begin
            FrmVenda.qratualizar.Params[1].Value := antestoque;
            FrmVenda.qratualizar.ExecSQL;
 
+           R_hora:=TimeToStr(time);
            FrmVenda.qratualizar.Close;
            FrmVenda.qratualizar.SQL.Clear;
            FrmVenda.qratualizar.SQL.Add('CALL sp_i_rastro(:r_data, :r_hora, :r_operador, :r_rotina, :r_operacao, :r_historico, :r_favorecido, :r_valor, :r_obs)');
@@ -579,8 +581,8 @@ begin
            FrmVenda.qratualizar.Params[2].Value := FrmPrincipal.sb.Panels[3].Text;
            FrmVenda.qratualizar.Params[3].Value := 'ESTOQUE';
            FrmVenda.qratualizar.Params[4].Value := 'A';
-           FrmVenda.qratualizar.Params[5].Value := 'Estoque Anterior: '+dm.produtosestoque.AsString+
-           ' - Cancel: '+FrmVenda.qrMovEstoqueqtd.AsString+' - Estoque Atual: '+FloatToStr(antestoque);
+           FrmVenda.qratualizar.Params[5].Value := 'Anterior: '+dm.produtosestoque.AsString+
+           ' - Cancel: '+FrmVenda.qrMovEstoqueqtd.AsString+' - Atual: '+FloatToStr(antestoque);
            FrmVenda.qratualizar.Params[6].Value := FrmVenda.qrMovEstoqueproduto.AsInteger;
            FrmVenda.qratualizar.Params[7].Value := 0;
            FrmVenda.qratualizar.Params[8].Value := FrmVenda.qrMovEstoquedocumento.AsString;
@@ -702,7 +704,7 @@ begin
      begin
        qrMovEstoque.Close;
        qrMovEstoque.SQL.Clear;
-       qrMovEstoque.SQL.Add('select E.documento,E.favorecido,E.produto,E.data,E.TipoMov,');
+       qrMovEstoque.SQL.Add('select E.documento,E.favorecido,E.produto,E.data,E.TipoMov,E.vlr50,');
        qrMovEstoque.SQL.Add('E.und,E.qtd,E.VlrUnit,E.VlrTotal,P.nome');
        qrMovEstoque.SQL.Add('from movestoque E, produtos P');
        qrMovEstoque.SQL.Add('where (E.produto=P.codigo)');
@@ -794,6 +796,13 @@ begin
 
            FrmVenda.qratualizar.Close;
            FrmVenda.qratualizar.SQL.Clear;
+           FrmVenda.qratualizar.SQL.Add('update pedidos set');
+           FrmVenda.qratualizar.SQL.Add('n_doc = null');
+           FrmVenda.qratualizar.SQL.Add('where (n_doc= '+chr(39)+documento+chr(39)+')');
+           FrmVenda.qratualizar.ExecSQL;
+
+           FrmVenda.qratualizar.Close;
+           FrmVenda.qratualizar.SQL.Clear;
            FrmVenda.qratualizar.SQL.Add('CALL sp_i_rastro(:r_data, :r_hora, :r_operador, :r_rotina, :r_operacao, :r_historico, :r_favorecido, :r_valor, :r_obs)');
            FrmVenda.qratualizar.Params[0].Value := date;
            FrmVenda.qratualizar.Params[1].Value := R_hora;
@@ -817,7 +826,7 @@ begin
   dm.usuarios.Close;
   dm.usuarios.Open;
   dm.usuarios.Locate('nome',FrmPrincipal.sb.Panels[3].Text,[]);
-  if dm.usuariosparametros.value='5' then
+  if dm.usuariosconhecimentos.value='5' then
      begin
         documento:=qrconsultavendaI.Value;
         dm.Venda.Close;
@@ -917,6 +926,9 @@ end;
 
 procedure TFrmVenda.btrelatorioClick(Sender: TObject);
 begin
+  dm.parametros.Close;
+  dm.parametros.Open;
+
   dm.venda.Close;
   dm.venda.SQL.Clear;
   dm.venda.SQL.Add('select * from venda');
@@ -925,14 +937,24 @@ begin
   dm.venda.Open;
   AtualizarMovEstoque;
 
+  qry              :=  TZQuery.Create(nil);
+  qry.Connection   :=  dm.ZConnection1;
+  qry.Close;
+  qry.SQL.Clear;
+  qry.SQL.Add('select pedido from pedidos');
+  qry.SQL.Add('where n_doc = '+chr(39)+qrconsultavendaI.Value+chr(39));
+  qry.open;
+  if qry.RecordCount>0 then
+     qrpedido.Caption:=qry.FieldByName('pedido').AsString
+  else
+     qrpedido.Caption:='';
+  qry.Free;
+
   dm.clientes.Close;
   dm.clientes.SQL.Clear;
   dm.clientes.SQL.Add('select * from clientes');
   dm.clientes.SQL.Add('where (codigo='+IntToStr(dm.vendacliente.Value)+')');
   dm.clientes.Open;
-
-  qrcnpj_cpf.Caption:=dm.clientescpf.Value;
-  qrie_rg.Caption:=dm.clientesrg.Value;
 
   movvenda.Close;
   movvenda.SQL.Clear;
@@ -1034,6 +1056,8 @@ end;
 procedure TFrmVenda.BitBtn5Click(Sender: TObject);
 begin
   try
+    edvenda.Text:=qrconsultavendaI.Value;
+    bt1.Click;
     dm.parametros.Close;
     dm.parametros.Open;
     Application.CreateForm(TfEnvioNfce, fEnvioNfce);
@@ -1125,9 +1149,16 @@ begin
     fEnvioNfce.edValorIcms.Text:='0,00';
     fEnvioNfce.edAliquota.Text:='0';
     fEnvioNfce.lbvenda.Caption:=qrconsultavendaI.Value;
-    busca :=IntToStr(dm.parametrosultnfce.Value+1);
+
+    qryN              :=  TZQuery.Create(nil);
+    qryN.Connection   :=  dm.ZConnection1;
+    qryN.SQL.Add('select count(*) as qtd from venda');
+    qryN.SQL.Add('where protocolo_nfce is not null');
+    qryN.Open;
+    busca :=IntToStr(qryN.FieldByName('qtd').AsInteger+1);
     ClickedOK := InputQuery('Digite a última NFCe', 'QTD NFCe', busca);
     fEnvioNfce.edNota.Text:=busca;
+    qryN.Free;
 
     dm.rastro.Close;
     dm.rastro.SQL.Clear;
@@ -1175,6 +1206,15 @@ procedure TFrmVenda.DBGrid1KeyDown(Sender: TObject; var Key: Word;
 begin
   if key=vk_f2 then // Inserir Mov. Estoque
      begin
+       dm.usuarios.Close;
+       dm.usuarios.Open;
+       dm.usuarios.Locate('nome',FrmPrincipal.sb.Panels[3].Text,[]);
+       if dm.usuariosparametros.value<>'5' then
+          begin
+            application.MessageBox('Contate a Diretoria','Atenção',mb_ok+MB_ICONINFORMATION);
+            exit;
+          end;
+
       qrconsulta.First;
       while not qrconsulta.Eof do
             begin
@@ -1185,6 +1225,15 @@ begin
      end;
   if key=vk_f3 then // Atualizar Desconto no Estoque
      begin
+       dm.usuarios.Close;
+       dm.usuarios.Open;
+       dm.usuarios.Locate('nome',FrmPrincipal.sb.Panels[3].Text,[]);
+       if dm.usuariosparametros.value<>'5' then
+          begin
+            application.MessageBox('Contate a Diretoria','Atenção',mb_ok+MB_ICONINFORMATION);
+            exit;
+          end;
+
       qrconsulta.First;
       while not qrconsulta.Eof do
             begin
@@ -1195,6 +1244,15 @@ begin
      end;
   if key=vk_f4 then // Atualizar Data da Venda
      begin
+       dm.usuarios.Close;
+       dm.usuarios.Open;
+       dm.usuarios.Locate('nome',FrmPrincipal.sb.Panels[3].Text,[]);
+       if dm.usuariosparametros.value<>'5' then
+          begin
+            application.MessageBox('Contate a Diretoria','Atenção',mb_ok+MB_ICONINFORMATION);
+            exit;
+          end;
+
        busca := '';
        ClickedOK := InputQuery('Digite a Data das Vendas', 'Alterar Data das Vendas', busca);
        if ClickedOK then
@@ -1322,12 +1380,6 @@ begin
             qratualizar.SQL.Clear;
             qratualizar.SQL.Add('delete from movestoque');
             qratualizar.SQL.Add('where documento = '+chr(39)+qrconsultavendaI.Value+chr(39));
-            qratualizar.ExecSQL;
-
-            qratualizar.Close;
-            qratualizar.SQL.Clear;
-            qratualizar.SQL.Add('delete from historicoclie');
-            qratualizar.SQL.Add('where venda = '+chr(39)+qrconsultavendaI.Value+chr(39));
             qratualizar.ExecSQL;
 
             while not dm.venda.Eof do
@@ -1492,7 +1544,6 @@ end;
 procedure TFrmVenda.EnviarNFE1Click(Sender: TObject);
 begin
   try
-//    Application.CreateForm(TFrmMonitorNF, FrmMonitorNF);
     Application.CreateForm(TfEnvioNfe, fEnvioNfe);
 
     dm.parametros.Close;
@@ -1608,11 +1659,13 @@ begin
     qrytot.Connection   :=  dm.ZConnection1;
     qrytot.Close;
     qrytot.SQL.Clear;
-    qrytot.SQL.Add('select sum(total) as total from venda');
-    qrytot.SQL.Add('where vendaI ='+chr(39)+FrmVenda.qrconsultavendaI.Value+chr(39));
-    qrytot.SQL.Add('and fechada ='+chr(39)+'S'+chr(39));
+    qrytot.SQL.Add('select sum(vlrtotal) as totalgeral, sum(vlr50) as total50 from movestoque');
+    qrytot.SQL.Add('where documento ='+chr(39)+FrmVenda.qrconsultavendaI.Value+chr(39));
     qrytot.Open;
-    Valorbase := qrytot.FieldByName('total').AsFloat;
+    if qrytot.FieldByName('total50').AsFloat>0 then
+       Valorbase := qrytot.FieldByName('total50').AsFloat
+    else
+       Valorbase := qrytot.FieldByName('totalgeral').AsFloat;
 
     fEnvioNfe.edValorProdutos.Text:=formatfloat('0.00',Valorbase);
     fEnvioNfe.edValorNota.Text:=formatfloat('0.00',Valorbase);
@@ -1898,6 +1951,125 @@ begin
 
   qry.Free;
   showmessage('FIM!!!');
+end;
+
+procedure TFrmVenda.AlterarCliente1Click(Sender: TObject);
+begin
+  if qrconsulta.RecordCount<>1 then
+     begin
+       showmessage('Consulte uma venda de um cliente!!!');
+       exit;
+     end;
+
+  if edcliente.Text='' then
+     begin
+       showmessage('Consulte um Cliente!!!');
+       edcliente.SetFocus;
+       exit;
+     end;
+
+  if Application.Messagebox ('Confirma Operação?','Alterar Cliente', mb_yesno+mb_iconquestion+MB_DEFBUTTON2)=id_yes then
+     begin
+       busca:=edcliente.Text;
+       qratualizar.Close;
+       qratualizar.SQL.Clear;
+       qratualizar.SQL.Add('update venda set');
+       qratualizar.SQL.Add('cliente = :busca');
+       qratualizar.SQL.Add('where (vendaI= '+chr(39)+qrconsultavendaI.AsString+chr(39)+')');
+       qratualizar.SQL.Add('and (fechada = '+chr(39)+'S'+chr(39)+')');
+       qratualizar.Params[0].Value := busca;
+       qratualizar.ExecSQL;
+
+       qratualizar.Close;
+       qratualizar.SQL.Clear;
+       qratualizar.SQL.Add('update movestoque set');
+       qratualizar.SQL.Add('favorecido = :busca');
+       qratualizar.SQL.Add('where (documento= '+chr(39)+qrconsultavendaI.AsString+chr(39)+')');
+       qratualizar.Params[0].Value := busca;
+       qratualizar.ExecSQL;
+
+       qrconsulta.Close;
+       qrconsulta.Open;
+     end;
+end;
+
+procedure TFrmVenda.AlterarData1Click(Sender: TObject);
+begin
+  dm.usuarios.Close;
+  dm.usuarios.Open;
+  dm.usuarios.Locate('nome',FrmPrincipal.sb.Panels[3].Text,[]);
+  if dm.usuariosparametros.value='5' then
+     begin
+       busca := '';
+       ClickedOK := InputQuery('Alterar Data da Venda', 'Digite a Data da Venda', busca);
+       if ClickedOK then
+          begin
+            dm.rastro.Close;
+            dm.rastro.SQL.Clear;
+            dm.rastro.SQL.Add('select * from rastro');
+            dm.rastro.SQL.Add('where (1=2)');
+            dm.rastro.Open;
+            dm.rastro.Insert;
+            dm.rastrodata.Value:=date;
+            dm.rastrohora.Value:=TimeToStr(time);
+            dm.rastrooperador.Value:=FrmPrincipal.sb.Panels[3].Text;
+            dm.rastrorotina.Value:='VENDA';
+            dm.rastrooperacao.Value:='A';
+            dm.rastrohistorico.Value:='Data Anterior: '+qrconsultadata.AsString;
+            dm.rastrofavorecido.Value:=qrconsultacliente.Value;
+            dm.rastrovalor.Value:=qrconsultatotal.Value;
+            dm.rastroobs.Value:=busca;
+            dm.rastro.Post;
+            dm.rastro.Close;
+
+            V_datan:=copy(busca,7,4)+'/'+copy(busca,4,2)+'/'+copy(busca,1,2);
+
+            qratualizar.Close;
+            qratualizar.SQL.Clear;
+            qratualizar.SQL.Add('update venda set');
+            qratualizar.sql.add('data = :V_datan');
+            qratualizar.SQL.Add('where vendaI= '+chr(39)+qrconsultavendaI.Value+chr(39));
+            qratualizar.Params[0].Value := V_datan;
+            qratualizar.ExecSQL;
+
+            qratualizar.Close;
+            qratualizar.SQL.Clear;
+            qratualizar.SQL.Add('update movestoque set');
+            qratualizar.sql.add('data = :V_datan');
+            qratualizar.SQL.Add('where documento= '+chr(39)+qrconsultavendaI.Value+chr(39));
+            qratualizar.Params[0].Value := V_datan;
+            qratualizar.ExecSQL;
+
+            qrconsulta.Close;
+            qrconsulta.Open;
+          end;
+     end
+     else
+        application.MessageBox('Acesso não permitido','Atenção',mb_ok+MB_ICONINFORMATION);
+end;
+
+procedure TFrmVenda.AtualizarProdutospeloPedido1Click(Sender: TObject);
+begin
+  dm.usuarios.Close;
+  dm.usuarios.Open;
+  dm.usuarios.Locate('nome',FrmPrincipal.sb.Panels[3].Text,[]);
+  if dm.usuariosparametros.value='0' then
+     begin
+       showmessage('Consulte o Gerente!!!');
+       exit;
+     end;
+end;
+
+procedure TFrmVenda.AtualizarListadeProdutosVendiidos1Click(
+  Sender: TObject);
+begin
+  dm.usuarios.Close;
+  dm.usuarios.Open;
+  dm.usuarios.Locate('nome',FrmPrincipal.sb.Panels[3].Text,[]);
+  if dm.usuariosparametros.value='5' then
+     inserirmovestoque
+  else
+     application.MessageBox('Acesso não permitido','Atenção',mb_ok+MB_ICONINFORMATION);
 end;
 
 end.

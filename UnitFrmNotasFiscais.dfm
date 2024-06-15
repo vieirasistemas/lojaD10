@@ -25,7 +25,7 @@ object FrmNotasFiscais: TFrmNotasFiscais
     Top = 0
     Width = 797
     Height = 573
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -801,7 +801,7 @@ object FrmNotasFiscais: TFrmNotasFiscais
         Width = 305
         Height = 21
         CharCase = ecUpperCase
-        ItemHeight = 0
+        ItemHeight = 13
         MaxLength = 40
         Sorted = True
         TabOrder = 8

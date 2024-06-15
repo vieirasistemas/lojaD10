@@ -79,22 +79,19 @@ begin
         atraso:=Int(date-StrToDate('05/08/2006'));
         senha:=atraso*StrToFloat(copy(dm.parametroscnpj.Value,13,2)+copy(dm.parametroscnpj.Value,1,2));
         password:=FloatToStr(senha);
+//        showmessage('ATRASO: '+FloatToStr(atraso));
+//        showmessage('CNPJ(13,2): '+copy(dm.parametroscnpj.Value,13,2));
+//        showmessage('CNPJ(1,2): '+copy(dm.parametroscnpj.Value,1,2));
+//        showmessage('SENHA: '+password);
         if edsenha.Text=password then
            begin
-            texto:=DateToStr(date+95);
-            liberacao:=copy(texto,7,4)+'/'+
-            copy(texto,4,2)+'/'+copy(texto,1,2);
+//            dias:=eddias.text;
+//            liberacao:='';
+//            atraso:=Int(date-StrToDate('05/08/2006'));
 
-            qratualizar.close;
-            qratualizar.sql.clear;
-            qratualizar.sql.add('update parametros set');
-            qratualizar.sql.add('liberacao = :liberacao');
-            qratualizar.Params[0].Value := liberacao;
-            qratualizar.ExecSQL;
+//            senha:=atraso*StrToFloat(copy(mecnpj.text,13,2)+copy(mecnpj.text,1,2));
+//            password:=FloatToStr(senha);
 
-            application.MessageBox('Liberação Efetuada com Sucesso','Atenção',mb_ok+MB_ICONINFORMATION);
-
-{
             texto:=copy(dm.parametroscnpj.Value,13,2)+
             copy(dm.parametroscnpj.Value,8,1)+
             copy(dm.parametroscnpj.Value,6,1)+
@@ -104,6 +101,9 @@ begin
             formatdatetime('yyyy',date+StrToInt(dias))+
             dias+formatdatetime('dd',date)+formatdatetime('mm',date)+
             formatdatetime('yyyy',date);
+
+//            showmessage(texto);
+
             for i:=1 to length(texto) do
                 begin
                   if copy(texto,i,1)='1' then
@@ -128,6 +128,8 @@ begin
                      liberacao:=liberacao+'WH4'
                 end;
 
+//            showmessage(INtToStr(length(liberacao)));
+//            showmessage(INtToStr(length(password)));
             for i:=1 to length(password) do
                 begin
                   if copy(password,i,1)='1' then
@@ -171,7 +173,6 @@ begin
              qratualizarNET.ExecSQL;
 
              application.MessageBox('Liberação Efetuada com Sucesso','Atenção',mb_ok+MB_ICONINFORMATION);
-}
            end
            else
              application.MessageBox('Senha Inválida','Atenção',mb_ok+MB_ICONERROR);

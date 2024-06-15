@@ -320,7 +320,7 @@ object FrmCadClientes: TFrmCadClientes
         end
         object Label25: TLabel
           Left = 53
-          Top = 127
+          Top = 95
           Width = 40
           Height = 16
           Caption = 'C'#243'digo'
@@ -333,7 +333,7 @@ object FrmCadClientes: TFrmCadClientes
         end
         object Label26: TLabel
           Left = 232
-          Top = 127
+          Top = 95
           Width = 45
           Height = 16
           Caption = 'Cliente'
@@ -372,7 +372,7 @@ object FrmCadClientes: TFrmCadClientes
         end
         object Label28: TLabel
           Left = 53
-          Top = 220
+          Top = 252
           Width = 40
           Height = 16
           Caption = 'Cidade'
@@ -385,7 +385,7 @@ object FrmCadClientes: TFrmCadClientes
         end
         object Label29: TLabel
           Left = 52
-          Top = 250
+          Top = 220
           Width = 41
           Height = 16
           Caption = 'Estado'
@@ -398,7 +398,7 @@ object FrmCadClientes: TFrmCadClientes
         end
         object Label30: TLabel
           Left = 181
-          Top = 250
+          Top = 220
           Width = 27
           Height = 16
           Caption = 'CEP'
@@ -423,8 +423,8 @@ object FrmCadClientes: TFrmCadClientes
           ParentFont = False
         end
         object Label48: TLabel
-          Left = 247
-          Top = 95
+          Left = 583
+          Top = 312
           Width = 30
           Height = 16
           Caption = 'Sexo'
@@ -436,8 +436,8 @@ object FrmCadClientes: TFrmCadClientes
           ParentFont = False
         end
         object Label46: TLabel
-          Left = 32
-          Top = 95
+          Left = 616
+          Top = 282
           Width = 61
           Height = 16
           Caption = 'Data Nasc'
@@ -474,6 +474,19 @@ object FrmCadClientes: TFrmCadClientes
           Font.Style = []
           ParentFont = False
         end
+        object Label1: TLabel
+          Left = 38
+          Top = 126
+          Width = 50
+          Height = 16
+          Caption = 'Fantasia'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clMaroon
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = []
+          ParentFont = False
+        end
         object edrg: TEdit
           Left = 280
           Top = 64
@@ -493,7 +506,7 @@ object FrmCadClientes: TFrmCadClientes
         end
         object EdCodigo: TEdit
           Left = 100
-          Top = 126
+          Top = 94
           Width = 69
           Height = 24
           Font.Charset = ANSI_CHARSET
@@ -502,12 +515,12 @@ object FrmCadClientes: TFrmCadClientes
           Font.Name = 'Arial'
           Font.Style = []
           ParentFont = False
-          TabOrder = 4
+          TabOrder = 2
           OnEnter = EdCodigoEnter
         end
         object ednome: TEdit
           Left = 280
-          Top = 126
+          Top = 94
           Width = 497
           Height = 24
           CharCase = ecUpperCase
@@ -517,7 +530,7 @@ object FrmCadClientes: TFrmCadClientes
           Font.Name = 'Arial'
           Font.Style = [fsBold]
           ParentFont = False
-          TabOrder = 5
+          TabOrder = 3
           OnEnter = ednomeEnter
           OnExit = ednomeExit
         end
@@ -533,7 +546,7 @@ object FrmCadClientes: TFrmCadClientes
           Font.Name = 'Arial'
           Font.Style = []
           ParentFont = False
-          TabOrder = 6
+          TabOrder = 5
           OnEnter = EdEnderecoEnter
           OnExit = EdEnderecoExit
         end
@@ -549,29 +562,13 @@ object FrmCadClientes: TFrmCadClientes
           Font.Name = 'Arial'
           Font.Style = []
           ParentFont = False
-          TabOrder = 7
+          TabOrder = 6
           OnEnter = EdBairroEnter
           OnExit = EdBairroExit
         end
-        object EdCidade: TEdit
+        object cbestado: TComboBox
           Left = 99
           Top = 219
-          Width = 334
-          Height = 24
-          CharCase = ecUpperCase
-          Font.Charset = ANSI_CHARSET
-          Font.Color = clNavy
-          Font.Height = -13
-          Font.Name = 'Arial'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 8
-          OnEnter = EdCidadeEnter
-          OnExit = EdCidadeExit
-        end
-        object cbestado: TComboBox
-          Left = 100
-          Top = 249
           Width = 55
           Height = 24
           CharCase = ecUpperCase
@@ -582,17 +579,18 @@ object FrmCadClientes: TFrmCadClientes
           Font.Style = []
           ItemHeight = 16
           ParentFont = False
-          TabOrder = 9
+          Sorted = True
+          TabOrder = 7
           OnEnter = cbestadoEnter
           OnExit = cbestadoExit
           Items.Strings = (
+            'CE'
             'MA'
-            'PI'
-            'CE')
+            'PI')
         end
         object mecep: TMaskEdit
           Left = 215
-          Top = 249
+          Top = 219
           Width = 83
           Height = 24
           EditMask = '99.999.999;0;_'
@@ -603,12 +601,12 @@ object FrmCadClientes: TFrmCadClientes
           Font.Style = []
           MaxLength = 10
           ParentFont = False
-          TabOrder = 10
+          TabOrder = 8
           OnEnter = mecepEnter
           OnExit = mecepExit
         end
         object mefone1: TMaskEdit
-          Left = 100
+          Left = 99
           Top = 281
           Width = 102
           Height = 24
@@ -620,7 +618,7 @@ object FrmCadClientes: TFrmCadClientes
           Font.Style = []
           MaxLength = 14
           ParentFont = False
-          TabOrder = 11
+          TabOrder = 10
           OnEnter = mefone1Enter
           OnExit = mefone1Exit
         end
@@ -637,7 +635,7 @@ object FrmCadClientes: TFrmCadClientes
           Font.Style = []
           MaxLength = 14
           ParentFont = False
-          TabOrder = 12
+          TabOrder = 11
           OnEnter = mefone2Enter
           OnExit = mefone2Exit
         end
@@ -654,13 +652,13 @@ object FrmCadClientes: TFrmCadClientes
           Font.Style = []
           MaxLength = 14
           ParentFont = False
-          TabOrder = 13
+          TabOrder = 12
           OnEnter = mefone3Enter
           OnExit = mefone3Exit
         end
         object cbsexo: TComboBox
-          Left = 280
-          Top = 94
+          Left = 616
+          Top = 311
           Width = 153
           Height = 24
           CharCase = ecUpperCase
@@ -671,7 +669,7 @@ object FrmCadClientes: TFrmCadClientes
           Font.Style = []
           ItemHeight = 16
           ParentFont = False
-          TabOrder = 3
+          TabOrder = 15
           OnEnter = cbsexoEnter
           OnExit = cbsexoExit
           Items.Strings = (
@@ -679,8 +677,8 @@ object FrmCadClientes: TFrmCadClientes
             'FEMININO')
         end
         object medtnasc: TMaskEdit
-          Left = 100
-          Top = 94
+          Left = 684
+          Top = 281
           Width = 83
           Height = 24
           EditMask = '99/99/9999;1;_'
@@ -691,7 +689,7 @@ object FrmCadClientes: TFrmCadClientes
           Font.Style = []
           MaxLength = 10
           ParentFont = False
-          TabOrder = 2
+          TabOrder = 13
           Text = '  /  /    '
           OnEnter = medtnascEnter
           OnExit = medtnascExit
@@ -724,7 +722,7 @@ object FrmCadClientes: TFrmCadClientes
           Font.Name = 'Arial'
           Font.Style = []
           ParentFont = False
-          TabOrder = 15
+          TabOrder = 16
           OnEnter = edhomeEnter
           OnExit = edhomeExit
         end
@@ -744,6 +742,45 @@ object FrmCadClientes: TFrmCadClientes
           TabOrder = 0
           OnEnter = edcpfEnter
           OnExit = edcpfExit
+        end
+        object cbcidade: TComboBox
+          Left = 99
+          Top = 251
+          Width = 334
+          Height = 24
+          CharCase = ecUpperCase
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clNavy
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = []
+          ItemHeight = 16
+          ParentFont = False
+          Sorted = True
+          TabOrder = 9
+          OnEnter = cbcidadeEnter
+          OnExit = cbcidadeExit
+          Items.Strings = (
+            'CE'
+            'MA'
+            'PI')
+        end
+        object edfantasia: TEdit
+          Left = 100
+          Top = 125
+          Width = 677
+          Height = 24
+          CharCase = ecUpperCase
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clNavy
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = []
+          MaxLength = 30
+          ParentFont = False
+          TabOrder = 4
+          OnEnter = edfantasiaEnter
+          OnExit = edfantasiaExit
         end
       end
       object Panel1: TPanel

@@ -264,7 +264,6 @@ type
     procedure edfornecedorKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure cbtipoExit(Sender: TObject);
-    procedure cbLocalExit(Sender: TObject);
   private
     { Private declarations }
   public
@@ -592,19 +591,6 @@ begin
          chmostrar.Visible:=true
       else
          chmostrar.Visible:=false;
-end;
-
-procedure TFrmEstoqueRel.cbLocalExit(Sender: TObject);
-begin
-  if cblocal.Text <> '' then
-     begin
-       dm.empresas.open; 
-       if not(dm.empresas.locate('nome', cblocal.text, [LoCaseInsensitive])) then
-       begin
-         Showmessage('Empresa inválida!');
-         cblocal.SetFocus;
-       end;
-     end;
 end;
 
 end.

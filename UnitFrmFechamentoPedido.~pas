@@ -1,0 +1,343 @@
+unit UnitFrmFechamentoPedido;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, Mask, DB, DBTables, Grids, DBGrids, QRCtrls,
+  QuickRpt, ExtCtrls, RLReport, ZAbstractRODataset, ZAbstractDataset,
+  ZDataset, jpeg, EditAlinhado;
+
+type
+  TFrmFechamentoPedido = class(TForm)
+    bt1: TBitBtn;
+    bt2: TBitBtn;
+    medatainicial: TMaskEdit;
+    Label4: TLabel;
+    Label5: TLabel;
+    medatafinal: TMaskEdit;
+    cboperador: TComboBox;
+    lbOperador: TLabel;
+    ZQuery1: TZQuery;
+    ZQuery1codigo: TStringField;
+    ZQuery1descricao: TStringField;
+    ZQuery1Total: TFloatField;
+    ZQuery2: TZQuery;
+    dsqrMovEstoque: TDataSource;
+    qrMovEstoque: TZQuery;
+    qrMovEstoquedocumento: TStringField;
+    qrMovEstoquefavorecido: TIntegerField;
+    qrMovEstoqueproduto: TIntegerField;
+    qrMovEstoquedata: TDateField;
+    qrMovEstoqueTipoMov: TStringField;
+    qrMovEstoqueund: TStringField;
+    qrMovEstoqueqtd: TFloatField;
+    qrMovEstoqueVlrUnit: TFloatField;
+    qrMovEstoqueVlrTotal: TFloatField;
+    qrMovEstoquenome: TStringField;
+    RLReport1: TRLReport;
+    RLBand1: TRLBand;
+    qrcodigo: TRLDBText;
+    qrdescricao: TRLDBText;
+    RLDBText1: TRLDBText;
+    RLDBText2: TRLDBText;
+    RLDBText6: TRLDBText;
+    RLDBText3: TRLDBText;
+    RLDBText4: TRLDBText;
+    RLDBText9: TRLDBText;
+    RLDBText10: TRLDBText;
+    RLBand2: TRLBand;
+    RLLabel1: TRLLabel;
+    RLLabel2: TRLLabel;
+    RLLabel7: TRLLabel;
+    RLLabel5: TRLLabel;
+    RLLabel11: TRLLabel;
+    RLLabel3: TRLLabel;
+    RLLabel10: TRLLabel;
+    RLLabel13: TRLLabel;
+    RLLabel12: TRLLabel;
+    RLBand3: TRLBand;
+    RLDBText5: TRLDBText;
+    RLDBText7: TRLDBText;
+    RLLabel6: TRLLabel;
+    RLDBText8: TRLDBText;
+    RLLabel4: TRLLabel;
+    RLSystemInfo1: TRLSystemInfo;
+    RLSystemInfo2: TRLSystemInfo;
+    RLSystemInfo3: TRLSystemInfo;
+    RLBand4: TRLBand;
+    RLLabel8: TRLLabel;
+    RLLabel9: TRLLabel;
+    RLBand5: TRLBand;
+    RLLabel14: TRLLabel;
+    RLDBResult2: TRLDBResult;
+    RLDBResult3: TRLDBResult;
+    qratualizar: TZQuery;
+    ZQuery2pedido: TIntegerField;
+    ZQuery2codigo: TStringField;
+    ZQuery2descricao: TStringField;
+    ZQuery2parcelas: TIntegerField;
+    ZQuery2prazo: TIntegerField;
+    ZQuery2valor: TFloatField;
+    ZQuery2apelido: TStringField;
+    ZQuery2nome: TStringField;
+    RLReport3: TRLReport;
+    RLBand13: TRLBand;
+    RLDBText19: TRLDBText;
+    RLDBText23: TRLDBText;
+    RLLabel23: TRLLabel;
+    RLDBText24: TRLDBText;
+    qrtituloI: TRLLabel;
+    RLSystemInfo7: TRLSystemInfo;
+    RLSystemInfo8: TRLSystemInfo;
+    RLSystemInfo9: TRLSystemInfo;
+    qroperadorI: TRLLabel;
+    RLBand14: TRLBand;
+    RLLabel30: TRLLabel;
+    RLLabel31: TRLLabel;
+    RLGroup1: TRLGroup;
+    RLBand11: TRLBand;
+    RLLabel19: TRLLabel;
+    RLDBText15: TRLDBText;
+    RLBand12: TRLBand;
+    RLLabel20: TRLLabel;
+    RLLabel21: TRLLabel;
+    RLLabel22: TRLLabel;
+    RLLabel32: TRLLabel;
+    RLLabel33: TRLLabel;
+    RLLabel34: TRLLabel;
+    RLBand15: TRLBand;
+    RLDBText16: TRLDBText;
+    RLDBText17: TRLDBText;
+    RLDBText18: TRLDBText;
+    RLDBText25: TRLDBText;
+    RLDBText26: TRLDBText;
+    RLDBText27: TRLDBText;
+    RLBand17: TRLBand;
+    RLLabel36: TRLLabel;
+    RLDBResult11: TRLDBResult;
+    RLBand16: TRLBand;
+    RLLabel24: TRLLabel;
+    RLDBResult8: TRLDBResult;
+    DataSource1: TDataSource;
+    DataSource2: TDataSource;
+    RLReport2: TRLReport;
+    RLBand6: TRLBand;
+    RLDBText12: TRLDBText;
+    RLDBText13: TRLDBText;
+    RLBand7: TRLBand;
+    RLLabel17: TRLLabel;
+    RLLabel18: TRLLabel;
+    RLBand8: TRLBand;
+    RLDBText20: TRLDBText;
+    RLDBText21: TRLDBText;
+    RLLabel25: TRLLabel;
+    RLDBText22: TRLDBText;
+    qrtitulo: TRLLabel;
+    RLSystemInfo4: TRLSystemInfo;
+    RLSystemInfo5: TRLSystemInfo;
+    RLSystemInfo6: TRLSystemInfo;
+    qroperador: TRLLabel;
+    RLBand9: TRLBand;
+    RLLabel28: TRLLabel;
+    RLLabel29: TRLLabel;
+    RLBand10: TRLBand;
+    RLLabel35: TRLLabel;
+    RLDBResult1: TRLDBResult;
+    procedure bt2Click(Sender: TObject);
+    procedure bt1Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure medatainicialExit(Sender: TObject);
+    procedure medatafinalExit(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmFechamentoPedido: TFrmFechamentoPedido;
+  saldoAnterior,entrada,saida:double;
+  mes:integer;
+  dia_1,dia:string;
+
+implementation
+
+uses Unitdm, Unitfrmprincipal;
+
+{$R *.dfm}
+
+function AnoBiSexto(Ayear: Integer): Boolean;
+begin
+// Verifica se o ano é Bi-Sexto
+Result := (AYear mod 4 = 0) and ((AYear mod 100 <> 0) or
+(AYear mod 400 = 0));
+end;
+
+function DiasPorMes(Ayear, AMonth: Integer): Integer;
+const DaysInMonth: array[1..12] of Integer = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+begin
+Result := DaysInMonth[AMonth];
+if (AMonth = 2) and AnoBiSexto(AYear) then
+Inc(Result);
+end;
+
+procedure TFrmFechamentoPedido.bt2Click(Sender: TObject);
+begin
+      close;
+end;
+
+procedure TFrmFechamentoPedido.bt1Click(Sender: TObject);
+begin
+  if
+    (medatainicial.Text='  /  /    ') and
+    (medatafinal.Text='  /  /    ')
+  then
+  begin
+    application.MessageBox('Período Inválido','Atenção',mb_ok+mb_iconinformation);
+    medatainicial.SetFocus;
+    Exit;
+  end;
+
+  qratualizar.close;
+  qratualizar.sql.clear;
+  qratualizar.sql.add('update pedidos set');
+  qratualizar.sql.add('n_doc = pedido');
+  qratualizar.ExecSQL;
+
+  dm.parametros.Close;
+  dm.parametros.Open;
+
+  ZQuery1.Close;
+  ZQuery1.SQL.Clear;
+  ZQuery1.SQL.Add('select F.codigo,F.descricao,sum(V.valor) as Total');
+  ZQuery1.SQL.Add('from formapagto F, vendaformaspagto V, pedidos P');
+  ZQuery1.SQL.Add('where (P.pedido=V.venda) and (F.codigo=V.formapagto)');
+  ZQuery1.SQL.Add('and (V.tipo= '+chr(39)+'P'+chr(39)+')');
+  ZQuery1.SQL.Add('and (P.liberacao between '+chr(39)+
+  copy(medatainicial.text,7,4)+'/'+copy(medatainicial.text,4,2)+'/'+
+  copy(medatainicial.text,1,2)+chr(39)+' and '+chr(39)+
+  copy(MeDataFinal.text,7,4)+'/'+copy(MeDataFinal.text,4,2)+'/'+
+  copy(MeDataFinal.text,1,2)+chr(39)+')');
+  if cboperador.Text<>'' then
+     ZQuery1.SQL.Add('and (V.operador = '+chr(39)+cboperador.Text+chr(39)+')');
+
+  ZQuery1.SQL.Add('group by F.descricao');
+  ZQuery1.open;
+  qrtitulo.Caption:='Forma de Pagamento dos Pedidos em '+medatainicial.text+' à '+medatafinal.text;
+  if cboperador.Text<>'' then
+     qroperador.Caption:='VENDEDOR(A): '+cboperador.Text
+  else
+     qroperador.Caption:='VENDEDOR(A) - GERAL';
+
+  QuickRep1.Preview;
+
+  ZQuery2.Close;
+  ZQuery2.SQL.Clear;
+  ZQuery2.SQL.Add('select P.pedido,F.codigo,F.descricao,V.parcelas,V.prazo,V.valor,I.apelido,C.nome');
+  ZQuery2.SQL.Add('from formapagto F, vendaformaspagto V, pedidos P, fornecedores I, clientes C');
+  ZQuery2.SQL.Add('where (P.pedido=V.venda) and (F.codigo=V.formapagto) and (P.vendedor=I.codigo) and (P.cliente=C.codigo)');
+  ZQuery2.SQL.Add('and (V.tipo= '+chr(39)+'P'+chr(39)+')');
+  ZQuery2.SQL.Add('and (P.liberacao between '+chr(39)+
+  copy(medatainicial.text,7,4)+'/'+copy(medatainicial.text,4,2)+'/'+
+  copy(medatainicial.text,1,2)+chr(39)+' and '+chr(39)+
+  copy(MeDataFinal.text,7,4)+'/'+copy(MeDataFinal.text,4,2)+'/'+
+  copy(MeDataFinal.text,1,2)+chr(39)+')');
+  if cboperador.Text<>'' then
+     ZQuery2.SQL.Add('and (operador = '+chr(39)+cboperador.Text+chr(39)+')');
+  ZQuery2.SQL.Add('order by descricao,nome');
+
+  ZQuery2.open;
+  qrtituloI.Caption:='Pedidos do Período de '+medatainicial.text+' à '+medatafinal.text;
+  if cboperador.Text<>'' then
+     qroperadorI.Caption:='VENDEDOR(A): '+cboperador.Text
+  else
+     qroperadorI.Caption:='VENDEDOR(A) - GERAL';
+
+  RLReport3.Preview;
+
+  qrMovEstoque.Close;
+  qrMovEstoque.SQL.Clear;
+  qrMovEstoque.SQL.Add('select * from movestoque E, produtos P, pedidos V');
+  qrMovEstoque.SQL.Add('where (V.n_doc=E.documento) and (E.produto=P.codigo)');
+//  qrMovEstoque.SQL.Add('and (E.tipomov= '+chr(39)+'SV'+chr(39)+')');
+  qrMovEstoque.SQL.Add('and (V.liberacao between '+chr(39)+
+  copy(medatainicial.text,7,4)+'/'+copy(medatainicial.text,4,2)+'/'+
+  copy(medatainicial.text,1,2)+chr(39)+' and '+chr(39)+
+  copy(MeDataFinal.text,7,4)+'/'+copy(MeDataFinal.text,4,2)+'/'+
+  copy(MeDataFinal.text,1,2)+chr(39)+')');
+  qrMovEstoque.SQL.Add('order by E.data,E.documento');
+  qrMovEstoque.Open;
+  qrtitulo.Caption:='Produtos dos Pedidos de '+medatainicial.text+' à '+medatafinal.text;
+
+  RLReport1.Preview;
+
+end;
+
+procedure TFrmFechamentoPedido.FormShow(Sender: TObject);
+begin
+  dm.usuarios.Close;
+  dm.usuarios.Open;
+  cboperador.Items.Clear;
+  while not dm.usuarios.Eof do
+        begin
+          cboperador.Items.Add(dm.usuariosNome.Value);
+          dm.usuarios.Next;
+        end;
+
+  medatainicial.Text:=DateToStr(date);
+  medatafinal.Text:=DateToStr(date);
+  dm.parametros.Close;
+  dm.parametros.Open;
+end;
+
+procedure TFrmFechamentoPedido.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+        if key=#13 then
+        begin
+           SelectNext(activecontrol,True,True);
+           key:=#0;
+        end;
+end;
+
+procedure TFrmFechamentoPedido.medatainicialExit(Sender: TObject);
+begin
+  if medatainicial.text<>'  /  /    ' then
+  begin
+  Try
+     StrToDate(medatainicial.Text) ;
+  Except
+  begin
+     application.MessageBox('Data Inválida!','Atenção',mb_Ok+mb_iconerror);
+     medatainicial.setfocus;
+  end;
+  end;
+  end;
+end;
+
+procedure TFrmFechamentoPedido.medatafinalExit(Sender: TObject);
+begin
+  if MeDataFinal.text<>'  /  /    ' then
+  begin
+  Try
+     StrToDate(MeDataFinal.Text) ;
+     If StrToDate(MeDataInicial.Text) > StrToDate(MeDataFinal.Text) then
+        Begin
+           MessageBox(Handle, 'Data inferior à data inicial de pesquisa!!', 'Atenção', mb_IconWarning or mb_Ok);
+           medatafinal.text:='';
+           medatainicial.text:='';
+           MeDatainicial.SetFocus;
+        End;
+  Except
+  begin
+     application.MessageBox('Data Inválida!','Atenção',mb_Ok+mb_iconerror);
+     MeDataFinal.setfocus;
+  end;
+  end;
+  end;
+end;
+
+end.
+
+

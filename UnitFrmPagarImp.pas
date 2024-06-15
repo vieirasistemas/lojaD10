@@ -28,9 +28,6 @@ type
     RLLabel9: TRLLabel;
     RLBand5: TRLBand;
     RLLabel4: TRLLabel;
-    matricial: TRLDraftFilter;
-    RLPDFFilter1: TRLPDFFilter;
-    RLXLSFilter1: TRLXLSFilter;
     RLLabel2: TRLLabel;
     RLLabel5: TRLLabel;
     RLLabel1: TRLLabel;

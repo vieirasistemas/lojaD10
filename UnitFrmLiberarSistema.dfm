@@ -51,9 +51,9 @@ object FrmLiberarSistema: TFrmLiberarSistema
   object Label3: TLabel
     Left = 24
     Top = 56
-    Width = 381
+    Width = 165
     Height = 19
-    Caption = 'Fones (62)99119-1659 - vieirasistemas@gmail.com'
+    Caption = 'Fones (62)99119-1659'
     Font.Charset = ANSI_CHARSET
     Font.Color = clBlack
     Font.Height = -16

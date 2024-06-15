@@ -383,6 +383,12 @@ object dm: Tdm
     object parametrosliberacao: TDateField
       FieldName = 'liberacao'
     end
+    object parametrosmaquns: TIntegerField
+      FieldName = 'maquns'
+    end
+    object parametrospedido: TIntegerField
+      FieldName = 'pedido'
+    end
   end
   object dsfornecedores: TDataSource
     DataSet = fornecedores
@@ -1948,15 +1954,14 @@ object dm: Tdm
       FieldName = 'und'
       Size = 5
     end
-    object movestoquetipo: TStringField
-      FieldName = 'tipo'
-      Size = 1
-    end
     object movestoquebaseicms: TFloatField
       FieldName = 'baseicms'
     end
     object movestoquevlricms: TFloatField
       FieldName = 'vlricms'
+    end
+    object movestoquevlr50: TFloatField
+      FieldName = 'vlr50'
     end
   end
   object dsmovestoque: TDataSource
@@ -2215,5 +2220,240 @@ object dm: Tdm
     object cfopicms: TFloatField
       FieldName = 'icms'
     end
+  end
+  object dspedidos: TDataSource
+    DataSet = pedidos
+    Left = 328
+    Top = 296
+  end
+  object dsmovpedido: TDataSource
+    DataSet = movpedido
+    Left = 328
+    Top = 344
+  end
+  object pedidos: TZQuery
+    Connection = ZConnection1
+    SQL.Strings = (
+      'select * from pedidos')
+    Params = <>
+    Left = 216
+    Top = 296
+    object pedidospedido: TIntegerField
+      FieldName = 'pedido'
+      Required = True
+    end
+    object pedidoslocal: TStringField
+      FieldName = 'local'
+      Size = 30
+    end
+    object pedidostabela: TIntegerField
+      FieldName = 'tabela'
+    end
+    object pedidositens: TFloatField
+      FieldName = 'itens'
+    end
+    object pedidossubtotal: TFloatField
+      FieldName = 'subtotal'
+    end
+    object pedidosdesconto: TFloatField
+      FieldName = 'desconto'
+    end
+    object pedidostotal: TFloatField
+      FieldName = 'total'
+    end
+    object pedidoscliente: TIntegerField
+      FieldName = 'cliente'
+    end
+    object pedidosvendedor: TIntegerField
+      FieldName = 'vendedor'
+    end
+    object pedidoscomissao: TFloatField
+      FieldName = 'comissao'
+    end
+    object pedidosparcelas: TIntegerField
+      FieldName = 'parcelas'
+    end
+    object pedidosprazo: TIntegerField
+      FieldName = 'prazo'
+    end
+    object pedidosintervalo: TIntegerField
+      FieldName = 'intervalo'
+    end
+    object pedidosvencto: TDateField
+      FieldName = 'vencto'
+    end
+    object pedidosconta: TStringField
+      FieldName = 'conta'
+      Size = 5
+    end
+    object pedidosobs: TStringField
+      FieldName = 'obs'
+      Size = 150
+    end
+    object pedidosnf: TStringField
+      FieldName = 'nf'
+      Size = 15
+    end
+    object pedidosliberacao: TDateField
+      FieldName = 'liberacao'
+    end
+    object pedidosdata: TDateField
+      FieldName = 'data'
+    end
+    object pedidosformapgto: TStringField
+      FieldName = 'formapgto'
+      Size = 2
+    end
+    object pedidosempresa: TIntegerField
+      FieldName = 'empresa'
+    end
+    object pedidosicmsretido: TFloatField
+      FieldName = 'icmsretido'
+    end
+    object pedidosformapagto: TStringField
+      FieldName = 'formapagto'
+      Size = 2
+    end
+    object pedidosVlrComissao: TFloatField
+      FieldName = 'VlrComissao'
+    end
+    object pedidosdescp: TFloatField
+      FieldName = 'descp'
+    end
+    object pedidosdigitado: TStringField
+      FieldName = 'digitado'
+      Size = 30
+    end
+    object pedidosliberado: TStringField
+      FieldName = 'liberado'
+      Size = 30
+    end
+    object pedidosromaneio: TIntegerField
+      FieldName = 'romaneio'
+    end
+    object pedidostipo: TStringField
+      FieldName = 'tipo'
+      Size = 2
+    end
+    object pedidoscotacao: TIntegerField
+      FieldName = 'cotacao'
+    end
+    object pedidostipolib: TStringField
+      FieldName = 'tipolib'
+      Size = 5
+    end
+    object pedidoscfop: TStringField
+      FieldName = 'cfop'
+      Size = 4
+    end
+    object pedidosn_doc: TStringField
+      FieldName = 'n_doc'
+      Size = 10
+    end
+  end
+  object movpedido: TZQuery
+    Connection = ZConnection1
+    SQL.Strings = (
+      'select * from movpedido')
+    Params = <>
+    Left = 216
+    Top = 344
+    object movpedidovenda: TIntegerField
+      FieldName = 'venda'
+      Required = True
+    end
+    object movpedidoseq: TIntegerField
+      FieldName = 'seq'
+      Required = True
+    end
+    object movpedidoproduto: TIntegerField
+      FieldName = 'produto'
+      Required = True
+    end
+    object movpedidound: TStringField
+      FieldName = 'und'
+      Required = True
+      Size = 5
+    end
+    object movpedidoqtd: TFloatField
+      FieldName = 'qtd'
+      Required = True
+    end
+    object movpedidounit: TFloatField
+      FieldName = 'unit'
+      Required = True
+    end
+    object movpedidodescp: TFloatField
+      FieldName = 'descp'
+    end
+    object movpedidodescv: TFloatField
+      FieldName = 'descv'
+    end
+    object movpedidototal: TFloatField
+      FieldName = 'total'
+      Required = True
+    end
+    object movpedidoicms: TFloatField
+      FieldName = 'icms'
+    end
+    object movpedidopeso: TFloatField
+      FieldName = 'peso'
+    end
+    object movpedidolocal: TStringField
+      FieldName = 'local'
+      Size = 1
+    end
+    object movpedidolote: TStringField
+      FieldName = 'lote'
+    end
+    object movpedidobaseicms: TFloatField
+      FieldName = 'baseicms'
+    end
+  end
+  object vendaformaspagto: TZQuery
+    Connection = ZConnection1
+    SQL.Strings = (
+      'select * from vendaformaspagto')
+    Params = <>
+    Left = 216
+    Top = 392
+    object vendaformaspagtovenda: TStringField
+      FieldName = 'venda'
+      Required = True
+      Size = 15
+    end
+    object vendaformaspagtoformapagto: TStringField
+      FieldName = 'formapagto'
+      Required = True
+      Size = 2
+    end
+    object vendaformaspagtocliente: TIntegerField
+      FieldName = 'cliente'
+      Required = True
+    end
+    object vendaformaspagtoparcelas: TIntegerField
+      FieldName = 'parcelas'
+      Required = True
+    end
+    object vendaformaspagtovalor: TFloatField
+      FieldName = 'valor'
+      Required = True
+      DisplayFormat = '#,##0.00'
+    end
+    object vendaformaspagtoprazo: TIntegerField
+      FieldName = 'prazo'
+    end
+    object vendaformaspagtointervalo: TIntegerField
+      FieldName = 'intervalo'
+    end
+    object vendaformaspagtotipo: TStringField
+      FieldName = 'tipo'
+      Size = 1
+    end
+  end
+  object dsvendaformaspagto: TDataSource
+    DataSet = vendaformaspagto
+    Left = 328
+    Top = 392
   end
 end

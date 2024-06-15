@@ -16,7 +16,6 @@ object FrmVendaRefaturar: TFrmVendaRefaturar
   OldCreateOrder = False
   Position = poDesktopCenter
   Scaled = False
-  OnActivate = FormActivate
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -106,12 +105,12 @@ object FrmVendaRefaturar: TFrmVendaRefaturar
     ParentFont = False
   end
   object Label14: TLabel
-    Left = 1072
+    Left = 1101
     Top = 322
-    Width = 120
+    Width = 91
     Height = 20
     Alignment = taRightJustify
-    Caption = 'Cheque AV R$'
+    Caption = 'Shopee R$'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -191,7 +190,7 @@ object FrmVendaRefaturar: TFrmVendaRefaturar
   end
   object Label6: TLabel
     Left = 379
-    Top = 439
+    Top = 455
     Width = 234
     Height = 16
     Caption = 'Pressione F11 para Excluir o Produto'
@@ -324,10 +323,23 @@ object FrmVendaRefaturar: TFrmVendaRefaturar
   end
   object Label15: TLabel
     Left = 379
-    Top = 455
+    Top = 471
     Width = 259
     Height = 16
     Caption = 'Pressione F12 para Efetuar o Pagamento'
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clRed
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label17: TLabel
+    Left = 379
+    Top = 439
+    Width = 251
+    Height = 16
+    Caption = 'Pressione F10 para Consultar o Produto'
     Font.Charset = ANSI_CHARSET
     Font.Color = clRed
     Font.Height = -13
@@ -448,7 +460,7 @@ object FrmVendaRefaturar: TFrmVendaRefaturar
     Top = 342
     Width = 143
     Height = 37
-    Color = 16776176
+    Color = 4227327
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -24
@@ -860,7 +872,6 @@ object FrmVendaRefaturar: TFrmVendaRefaturar
     Top = -5
     Width = 518
     Height = 442
-    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clNavy
     Font.Height = -11
@@ -937,6 +948,195 @@ object FrmVendaRefaturar: TFrmVendaRefaturar
       ParentFont = False
       TabOrder = 2
     end
+    object qrpedidosI: TDBGrid
+      Left = 5
+      Top = 10
+      Width = 509
+      Height = 386
+      Hint = 'D'#234' um duplo clique para excluir o item'
+      DataSource = dsmovpedido
+      Options = [dgTitles, dgColumnResize, dgColLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 3
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clNavy
+      TitleFont.Height = -11
+      TitleFont.Name = 'MS Sans Serif'
+      TitleFont.Style = [fsBold]
+      Columns = <
+        item
+          Alignment = taCenter
+          Expanded = False
+          FieldName = 'produto'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Arial'
+          Font.Style = []
+          Title.Alignment = taCenter
+          Title.Caption = 'Produto'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clNavy
+          Title.Font.Height = -11
+          Title.Font.Name = 'Arial'
+          Title.Font.Style = []
+          Width = 50
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'nome'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Arial'
+          Font.Style = []
+          Title.Caption = 'Nome do Produto'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clNavy
+          Title.Font.Height = -11
+          Title.Font.Name = 'Arial'
+          Title.Font.Style = []
+          Width = 255
+          Visible = True
+        end
+        item
+          Alignment = taCenter
+          Expanded = False
+          FieldName = 'und'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Arial'
+          Font.Style = []
+          Title.Alignment = taCenter
+          Title.Caption = 'UND'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clNavy
+          Title.Font.Height = -11
+          Title.Font.Name = 'Arial'
+          Title.Font.Style = []
+          Width = 29
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'qtd'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Arial'
+          Font.Style = []
+          Title.Alignment = taRightJustify
+          Title.Caption = 'QTD'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clNavy
+          Title.Font.Height = -11
+          Title.Font.Name = 'Arial'
+          Title.Font.Style = []
+          Width = 39
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'unit'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Arial'
+          Font.Style = []
+          Title.Alignment = taRightJustify
+          Title.Caption = 'Vlr. Unit.'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clNavy
+          Title.Font.Height = -11
+          Title.Font.Name = 'Arial'
+          Title.Font.Style = []
+          Width = 55
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'total'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Arial'
+          Font.Style = []
+          Title.Alignment = taRightJustify
+          Title.Caption = 'Vlr. Total'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clNavy
+          Title.Font.Height = -11
+          Title.Font.Name = 'Arial'
+          Title.Font.Style = []
+          Width = 55
+          Visible = True
+        end>
+    end
+  end
+  object chVendasPedidos: TCheckBox
+    Left = 379
+    Top = 496
+    Width = 150
+    Height = 17
+    Caption = 'Vendas via Pedidos'
+    Checked = True
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clBlack
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
+    State = cbChecked
+    TabOrder = 18
+    OnClick = chVendasPedidosClick
+  end
+  object qrpedidosC: TDBGrid
+    Left = 0
+    Top = 400
+    Width = 377
+    Height = 519
+    DataSource = dspedido
+    Options = [dgTitles, dgColumnResize, dgColLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+    ParentShowHint = False
+    PopupMenu = PopupMenu1
+    ShowHint = True
+    TabOrder = 19
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+    TitleFont.Style = []
+    OnCellClick = qrpedidosCCellClick
+    Columns = <
+      item
+        Alignment = taCenter
+        Expanded = False
+        FieldName = 'pedido'
+        Title.Alignment = taCenter
+        Title.Caption = 'Pedido'
+        Title.Font.Charset = ANSI_CHARSET
+        Title.Font.Color = clGreen
+        Title.Font.Height = -12
+        Title.Font.Name = 'Arial'
+        Title.Font.Style = [fsBold]
+        Width = 58
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'nome'
+        Title.Caption = 'Nome do Cliente'
+        Title.Font.Charset = ANSI_CHARSET
+        Title.Font.Color = clGreen
+        Title.Font.Height = -12
+        Title.Font.Name = 'Arial'
+        Title.Font.Style = [fsBold]
+        Width = 299
+        Visible = True
+      end>
   end
   object qratualizar: TZQuery
     Connection = dm.ZConnection1
@@ -1029,6 +1229,150 @@ object FrmVendaRefaturar: TFrmVendaRefaturar
     end
     object qrtotalizartotal: TFloatField
       FieldName = 'total'
+    end
+  end
+  object qrpedido: TZQuery
+    Connection = dm.ZConnection1
+    SQL.Strings = (
+      
+        'select C.nome,P.pedido,P.data,P.cliente,P.vendedor,P.itens,P.tot' +
+        'al,P.liberacao,P.nf,P.tipo'
+      'from clientes C, pedidos P'
+      'where P.cliente=C.codigo')
+    Params = <>
+    Left = 748
+    Top = 443
+    object qrpedidonome: TStringField
+      FieldName = 'nome'
+      Size = 70
+    end
+    object qrpedidopedido: TIntegerField
+      FieldName = 'pedido'
+    end
+    object qrpedidodata: TDateField
+      FieldName = 'data'
+    end
+    object qrpedidocliente: TIntegerField
+      FieldName = 'cliente'
+    end
+    object qrpedidovendedor: TIntegerField
+      FieldName = 'vendedor'
+    end
+    object qrpedidoitens: TFloatField
+      FieldName = 'itens'
+    end
+    object qrpedidototal: TFloatField
+      FieldName = 'total'
+      DisplayFormat = '#,##0.00'
+    end
+    object qrpedidoliberacao: TDateField
+      FieldName = 'liberacao'
+    end
+    object qrpedidonf: TStringField
+      FieldName = 'nf'
+      Size = 15
+    end
+    object qrpedidotipo: TStringField
+      FieldName = 'tipo'
+      Size = 2
+    end
+    object qrpedidosubtotal: TFloatField
+      FieldName = 'subtotal'
+      DisplayFormat = '#,##0.00'
+    end
+    object qrpedidodescp: TFloatField
+      FieldName = 'descp'
+      DisplayFormat = '0.00'
+    end
+  end
+  object dspedido: TDataSource
+    DataSet = qrpedido
+    Left = 776
+    Top = 440
+  end
+  object qrmovpedido: TZQuery
+    Connection = dm.ZConnection1
+    SQL.Strings = (
+      'select M.venda,M.produto,P.nome,M.und,M.qtd,'
+      'M.unit,M.total,M.seq,M.icms'
+      'from movpedido M, produtos P'
+      'where M.produto=P.codigo')
+    Params = <>
+    Left = 812
+    Top = 443
+    object qrmovpedidovenda: TIntegerField
+      FieldName = 'venda'
+      Required = True
+    end
+    object qrmovpedidoproduto: TIntegerField
+      FieldName = 'produto'
+      Required = True
+    end
+    object qrmovpedidonome: TStringField
+      FieldName = 'nome'
+      Size = 50
+    end
+    object qrmovpedidound: TStringField
+      FieldName = 'und'
+      Size = 5
+    end
+    object qrmovpedidoqtd: TFloatField
+      FieldName = 'qtd'
+    end
+    object qrmovpedidounit: TFloatField
+      FieldName = 'unit'
+      DisplayFormat = '#,##0.00'
+    end
+    object qrmovpedidototal: TFloatField
+      FieldName = 'total'
+      DisplayFormat = '#,##0.00'
+    end
+    object qrmovpedidoseq: TIntegerField
+      FieldName = 'seq'
+      Required = True
+    end
+    object qrmovpedidoicms: TFloatField
+      FieldName = 'icms'
+    end
+    object qrmovpedidodescp: TFloatField
+      FieldName = 'descp'
+    end
+    object qrmovpedidodescv: TFloatField
+      FieldName = 'descv'
+    end
+  end
+  object dsmovpedido: TDataSource
+    DataSet = qrmovpedido
+    Left = 840
+    Top = 440
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 160
+    Top = 184
+    object AtualizarPedidos1: TMenuItem
+      Caption = 'Atualizar Lista de Pedidos'
+      OnClick = AtualizarPedidos1Click
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object EfetuarRecebimento1: TMenuItem
+      Caption = 'Efetuar Recebimento'
+      OnClick = EfetuarRecebimento1Click
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object Consulta1: TMenuItem
+      Caption = 'Consulta de Vendas'
+      OnClick = Consulta1Click
+    end
+    object N3: TMenuItem
+      Caption = '-'
+    end
+    object RelatriodeFechamentodeVendas1: TMenuItem
+      Caption = 'Relat'#243'rio de Fechamento de Vendas'
+      OnClick = RelatriodeFechamentodeVendas1Click
     end
   end
 end

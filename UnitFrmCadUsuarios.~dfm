@@ -1,6 +1,6 @@
 object FrmCadUsuarios: TFrmCadUsuarios
-  Left = 0
-  Top = 74
+  Left = 171
+  Top = 126
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Cadastro de Usu'#225'rios'

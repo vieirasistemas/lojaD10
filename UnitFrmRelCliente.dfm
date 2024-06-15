@@ -418,8 +418,8 @@ object FrmRelCliente: TFrmRelCliente
     TabOrder = 9
   end
   object QuickRep1: TQuickRep
-    Left = 707
-    Top = 199
+    Left = 163
+    Top = 511
     Width = 1123
     Height = 794
     Frame.Color = clBlack
@@ -459,7 +459,7 @@ object FrmRelCliente: TFrmRelCliente
     PrinterSettings.LastPage = 0
     PrinterSettings.OutputBin = Auto
     PrintIfEmpty = True
-    ReportTitle = 'Relat'#243'rio - Recebimento'
+    ReportTitle = 'Visualizar Impress'#227'o'
     SnapToGrid = True
     Units = MM
     Zoom = 100
@@ -608,7 +608,7 @@ object FrmRelCliente: TFrmRelCliente
         ResetAfterPrint = False
         Transparent = False
         WordWrap = True
-        Expression = 'cnpj+cpf'
+        Expression = 'cpf'
         FontSize = 8
       end
       object QRExpr4: TQRExpr
@@ -709,6 +709,7 @@ object FrmRelCliente: TFrmRelCliente
         AutoSize = False
         AutoStretch = False
         Color = clWhite
+        DataSet = clientes
         DataField = 'fone1'
         Transparent = False
         WordWrap = True
@@ -1403,8 +1404,8 @@ object FrmRelCliente: TFrmRelCliente
     end
   end
   object QuickRep4: TQuickRep
-    Left = 670
-    Top = 137
+    Left = 886
+    Top = 513
     Width = 816
     Height = 1056
     Frame.Color = clBlack
@@ -1486,6 +1487,7 @@ object FrmRelCliente: TFrmRelCliente
         AutoSize = False
         AutoStretch = False
         Color = clWhite
+        DataSet = clientes
         DataField = 'Bairro'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1660,8 +1662,8 @@ object FrmRelCliente: TFrmRelCliente
     end
   end
   object QuickRep3: TQuickRep
-    Left = 769
-    Top = -66
+    Left = 953
+    Top = 62
     Width = 794
     Height = 1123
     Frame.Color = clBlack
@@ -1701,7 +1703,7 @@ object FrmRelCliente: TFrmRelCliente
     PrinterSettings.LastPage = 0
     PrinterSettings.OutputBin = Auto
     PrintIfEmpty = True
-    ReportTitle = 'Relat'#243'rio - Recebimento'
+    ReportTitle = 'Visualizar Impress'#227'o'
     SnapToGrid = True
     Units = MM
     Zoom = 100
@@ -1772,7 +1774,7 @@ object FrmRelCliente: TFrmRelCliente
         ResetAfterPrint = False
         Transparent = False
         WordWrap = True
-        Expression = 'cnpj+cpf'
+        Expression = 'cpf'
         FontSize = 8
       end
       object QRExpr14: TQRExpr
@@ -1873,6 +1875,7 @@ object FrmRelCliente: TFrmRelCliente
         AutoSize = False
         AutoStretch = False
         Color = clWhite
+        DataSet = clientes
         DataField = 'fone1'
         Transparent = False
         WordWrap = True
@@ -1960,6 +1963,7 @@ object FrmRelCliente: TFrmRelCliente
         AutoSize = False
         AutoStretch = False
         Color = clWhite
+        DataSet = clientes
         DataField = 'fone2'
         Transparent = False
         WordWrap = True
@@ -1985,6 +1989,7 @@ object FrmRelCliente: TFrmRelCliente
         AutoSize = False
         AutoStretch = False
         Color = clWhite
+        DataSet = clientes
         DataField = 'fone2'
         Transparent = False
         WordWrap = True
@@ -2339,7 +2344,7 @@ object FrmRelCliente: TFrmRelCliente
         ResetAfterPrint = False
         Transparent = False
         WordWrap = True
-        Expression = 'ie+rg'
+        Expression = 'rg'
         FontSize = 8
       end
       object QRLabel3: TQRLabel
@@ -2921,8 +2926,8 @@ object FrmRelCliente: TFrmRelCliente
     end
   end
   object QuickRep2: TQuickRep
-    Left = 705
-    Top = 278
+    Left = 961
+    Top = 302
     Width = 794
     Height = 1123
     Frame.Color = clBlack
@@ -2962,7 +2967,7 @@ object FrmRelCliente: TFrmRelCliente
     PrinterSettings.LastPage = 0
     PrinterSettings.OutputBin = Auto
     PrintIfEmpty = True
-    ReportTitle = 'Relat'#243'rio de Clientes - Sint'#233'tico'
+    ReportTitle = 'Visualizar Impress'#227'o'
     SnapToGrid = True
     Units = MM
     Zoom = 100
@@ -3697,6 +3702,20 @@ object FrmRelCliente: TFrmRelCliente
       end
     end
   end
+  object chExcel: TCheckBox
+    Left = 518
+    Top = 176
+    Width = 57
+    Height = 17
+    Caption = 'Excel'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clRed
+    Font.Height = -12
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 14
+  end
   object qratualizar: TZQuery
     Connection = dm.ZConnection1
     Params = <>
@@ -3708,26 +3727,12 @@ object FrmRelCliente: TFrmRelCliente
     SQL.Strings = (
       'select * from clientes')
     Params = <>
-    object clientestipo: TStringField
-      FieldName = 'tipo'
-      Required = True
-      Size = 1
-    end
-    object clientescnpj: TStringField
-      FieldName = 'cnpj'
-      Size = 14
-    end
-    object clientesie: TStringField
-      FieldName = 'ie'
-      Size = 15
-    end
-    object clientesim: TStringField
-      FieldName = 'im'
-      Size = 15
+    object clientescodigo: TIntegerField
+      FieldName = 'codigo'
     end
     object clientescpf: TStringField
       FieldName = 'cpf'
-      Size = 11
+      Size = 14
     end
     object clientesrg: TStringField
       FieldName = 'rg'
@@ -3756,23 +3761,20 @@ object FrmRelCliente: TFrmRelCliente
     end
     object clientescep: TStringField
       FieldName = 'cep'
-      EditMask = '99.999-999;0;_'
       Size = 8
     end
     object clientesfone1: TStringField
       FieldName = 'fone1'
-      EditMask = '(99)9999-9999;0;_'
-      Size = 10
+      EditMask = '(99)#9999-9999;0;_'
+      Size = 11
     end
     object clientesfone2: TStringField
       FieldName = 'fone2'
-      EditMask = '(99)9999-9999;0;_'
-      Size = 10
+      Size = 11
     end
     object clientesfone3: TStringField
       FieldName = 'fone3'
-      EditMask = '(99)9999-9999;0;_'
-      Size = 10
+      Size = 11
     end
     object clientessexo: TStringField
       FieldName = 'sexo'
@@ -3785,29 +3787,19 @@ object FrmRelCliente: TFrmRelCliente
       FieldName = 'email'
       Size = 40
     end
-    object clienteshomepage: TStringField
-      FieldName = 'homepage'
+    object clientesinstagran: TStringField
+      FieldName = 'instagran'
       Size = 40
     end
-    object clientesobs: TStringField
-      FieldName = 'obs'
-      Size = 250
-    end
-    object clientescadastro: TDateField
-      FieldName = 'cadastro'
-    end
-    object clientescontacontabil: TIntegerField
-      FieldName = 'contacontabil'
-    end
-    object clientesplanoconta: TStringField
-      FieldName = 'planoconta'
-      Size = 8
+    object clientesperc: TFloatField
+      FieldName = 'perc'
     end
     object clientesdias: TIntegerField
       FieldName = 'dias'
     end
-    object clientescodigo: TIntegerField
-      FieldName = 'codigo'
+    object clientesfantasia: TStringField
+      FieldName = 'fantasia'
+      Size = 30
     end
   end
 end

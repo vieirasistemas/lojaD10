@@ -1455,8 +1455,8 @@ object FrmPagarImp: TFrmPagarImp
     TabOrder = 13
   end
   object QuickRep2: TQuickRep
-    Left = 352
-    Top = 481
+    Left = 928
+    Top = 241
     Width = 816
     Height = 1056
     Frame.Color = clBlack
@@ -2669,20 +2669,6 @@ object FrmPagarImp: TFrmPagarImp
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 15
-  end
-  object matricial: TRLDraftFilter
-    Left = 560
-  end
-  object RLPDFFilter1: TRLPDFFilter
-    DocumentInfo.Creator = 'FortesReport v3.23 \251 Copyright '#169' 1999-2004 Fortes Inform'#225'tica'
-    ViewerOptions = []
-    FontEncoding = feNoEncoding
-    DisplayName = 'Documento PDF'
-    Left = 592
-  end
-  object RLXLSFilter1: TRLXLSFilter
-    DisplayName = 'Planilha Excel'
-    Left = 624
   end
   object qratualizar: TZQuery
     Connection = dm.ZConnection1

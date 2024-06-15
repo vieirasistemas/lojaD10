@@ -78,6 +78,45 @@ type
     Label8: TLabel;
     Label9: TLabel;
     Label15: TLabel;
+    Label17: TLabel;
+    chVendasPedidos: TCheckBox;
+    qrpedido: TZQuery;
+    qrpedidonome: TStringField;
+    qrpedidopedido: TIntegerField;
+    qrpedidodata: TDateField;
+    qrpedidocliente: TIntegerField;
+    qrpedidovendedor: TIntegerField;
+    qrpedidoitens: TFloatField;
+    qrpedidototal: TFloatField;
+    qrpedidoliberacao: TDateField;
+    qrpedidonf: TStringField;
+    qrpedidotipo: TStringField;
+    qrpedidosubtotal: TFloatField;
+    qrpedidodescp: TFloatField;
+    dspedido: TDataSource;
+    qrmovpedido: TZQuery;
+    qrmovpedidovenda: TIntegerField;
+    qrmovpedidoproduto: TIntegerField;
+    qrmovpedidonome: TStringField;
+    qrmovpedidound: TStringField;
+    qrmovpedidoqtd: TFloatField;
+    qrmovpedidounit: TFloatField;
+    qrmovpedidototal: TFloatField;
+    qrmovpedidoseq: TIntegerField;
+    qrmovpedidoicms: TFloatField;
+    qrmovpedidodescp: TFloatField;
+    qrmovpedidodescv: TFloatField;
+    dsmovpedido: TDataSource;
+    qrpedidosC: TDBGrid;
+    qrpedidosI: TDBGrid;
+    PopupMenu1: TPopupMenu;
+    AtualizarPedidos1: TMenuItem;
+    N1: TMenuItem;
+    EfetuarRecebimento1: TMenuItem;
+    N2: TMenuItem;
+    Consulta1: TMenuItem;
+    N3: TMenuItem;
+    RelatriodeFechamentodeVendas1: TMenuItem;
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure edValSubtotalExit(Sender: TObject);
     procedure edValDescontoExit(Sender: TObject);
@@ -89,7 +128,6 @@ type
     procedure edValChequeExit(Sender: TObject);
     procedure edValDinheiroEnter(Sender: TObject);
     procedure eddepositoExit(Sender: TObject);
-    procedure FormActivate(Sender: TObject);
     procedure edfaturadoExit(Sender: TObject);
     procedure chcreditoclienteClick(Sender: TObject);
     procedure AberturaCaixa1Click(Sender: TObject);
@@ -117,6 +155,12 @@ type
     procedure edcodbarraKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure edunitExit(Sender: TObject);
+    procedure chVendasPedidosClick(Sender: TObject);
+    procedure EfetuarRecebimento1Click(Sender: TObject);
+    procedure qrpedidosCCellClick(Column: TColumn);
+    procedure AtualizarPedidos1Click(Sender: TObject);
+    procedure Consulta1Click(Sender: TObject);
+    procedure RelatriodeFechamentodeVendas1Click(Sender: TObject);
   private
     function DescontaTaxaCartao( cartao : integer; valor : currency) : currency;
   public
@@ -142,7 +186,8 @@ implementation
 
 uses Unitdm, UnitFrmPrincipal, UnitFrmCadClientesCartao, 
   UnitFuncoes, UnitFrmWelcome, UnitFrmCadClientes, UnitFrmVenda,
-  UnitFrmSangria, UnitFrmFechamentoVenda, UnitFrmCadFuncionarios;
+  UnitFrmSangria, UnitFrmFechamentoVenda, UnitFrmCadFuncionarios,
+  UnitFrmCadProdutos;
 
 {$R *.dfm}
 
@@ -195,24 +240,27 @@ begin
   dm.usuarios.Open;
   dm.usuarios.Locate('nome',FrmPrincipal.sb.Panels[3].Text,[]);
 
+  if FrmVendaRefaturar.edValDesconto.Text<>'' then
+     begin
+       if n_pgto=1 then
+          vdesconto:=StringToFloat(FrmVendaRefaturar.edValDesconto.Text)
+       else
+          vdesconto:=StringToFloat(FrmVendaRefaturar.edValDesconto.Text)/n_pgto;
+     end
+     else
+       vdesconto:=0;
+
+  total:=vtotal+vdesconto;
+
   FrmVendaRefaturar.qratualizar.Close;
   FrmVendaRefaturar.qratualizar.SQL.Clear;
   FrmVendaRefaturar.qratualizar.SQL.Add('CALL sp_i_venda(:v_vendaI, :v_cliente, :v_vendedor, :v_subtotal, :v_total, :v_desconto, :v_fechada, :v_data, :v_formapagto, :v_operador)');
   FrmVendaRefaturar.qratualizar.Params[0].Value := FrmVendaRefaturar.p_venda.Caption;
   FrmVendaRefaturar.qratualizar.Params[1].Value := FrmVendaRefaturar.edcliente.Text;
   FrmVendaRefaturar.qratualizar.Params[2].Value := FrmVendaRefaturar.edvendedor.Text;
-  if vdesconto>0 then
-     begin
-       FrmVendaRefaturar.qratualizar.Params[3].Value := (vdesconto/n_pgto)+vtotal;
-       FrmVendaRefaturar.qratualizar.Params[4].Value := vtotal;
-       FrmVendaRefaturar.qratualizar.Params[5].Value := (vdesconto/n_pgto);
-     end
-     else
-     begin
-       FrmVendaRefaturar.qratualizar.Params[3].Value := vtotal;
-       FrmVendaRefaturar.qratualizar.Params[4].Value := vtotal;
-       FrmVendaRefaturar.qratualizar.Params[5].Value := 0;
-     end;
+  FrmVendaRefaturar.qratualizar.Params[3].Value := total;
+  FrmVendaRefaturar.qratualizar.Params[4].Value := vtotal;
+  FrmVendaRefaturar.qratualizar.Params[5].Value := vdesconto;
   FrmVendaRefaturar.qratualizar.Params[6].Value := 'S';
   FrmVendaRefaturar.qratualizar.Params[7].Value := date;
   FrmVendaRefaturar.qratualizar.Params[8].Value := vformapagto;
@@ -228,6 +276,8 @@ begin
   dm.movvenda.SQL.Add('where vendaI='+chr(39)+FrmVendaRefaturar.p_venda.Caption+chr(39));
   dm.movvenda.Open;
 
+  vdesconto:=0;
+  saldodesc:=0;
   R_hora:=TimeToStr(time);
   while not dm.movvenda.Eof do
         begin
@@ -241,13 +291,16 @@ begin
              (StrToFloat(FrmVendaRefaturar.edValDesconto.Text)>0) then
              begin
                pdesconto:=(StringToFloat(FrmVendaRefaturar.edValDesconto.Text)/StringToFloat(FrmVendaRefaturar.edValSubtotal.Text))*100;
+               vdesconto:=round(dm.movvendatotal.Value*pdesconto)/100;
+{
                if itens>1 then
                   begin
                     vdesconto:=round(dm.movvendatotal.Value*pdesconto)/100;
-                    saldodesc:=saldodesc+dm.movestoquedesconto.Value;
+                    saldodesc:=saldodesc+vdesconto;
                   end
                   else
                     vdesconto:=vlrdesc-saldodesc;
+}
              end
              else
                vdesconto:=0;
@@ -257,7 +310,10 @@ begin
           else
              total := dm.movvendatotal.Value;
 
-          m_vlrcom := (total*qryP.fieldbyname('comissao').AsFloat)/100;
+          if qryP.fieldbyname('comissao').AsFloat>0 then
+             m_vlrcom := (total*qryP.fieldbyname('comissao').AsFloat)/100
+          else
+             m_vlrcom := 0;
 
           FrmVendaRefaturar.qratualizar.Close;
           FrmVendaRefaturar.qratualizar.SQL.Clear;
@@ -268,7 +324,7 @@ begin
           FrmVendaRefaturar.qratualizar.Params[2].Value := dm.movvendaproduto.Value;
           FrmVendaRefaturar.qratualizar.Params[3].Value := qryP.fieldbyname('undint').AsString;
           FrmVendaRefaturar.qratualizar.Params[4].Value := dm.movvendaqtd.Value;
-          FrmVendaRefaturar.qratualizar.Params[5].Value := dm.movvendaunit.Value;
+          FrmVendaRefaturar.qratualizar.Params[5].Value := total/dm.movvendaqtd.Value;
           FrmVendaRefaturar.qratualizar.Params[6].Value := vdesconto;
           FrmVendaRefaturar.qratualizar.Params[7].Value := total;
           FrmVendaRefaturar.qratualizar.Params[8].Value := FrmVendaRefaturar.p_venda.Caption;
@@ -323,10 +379,60 @@ begin
         end;
 end;
 
+procedure BaixarFaturado;
+var
+D_conta,D_planoconta,
+D_pgto:String;
+D_valorpago:real;
+begin
+  if (StringToFloat(FrmVendaRefaturar.edValDinheiro.Text) > 0) then
+     D_conta:=dm.parametroscontacaixa.Value
+  else
+     D_conta:=dm.parametroscontabanco.Value;
+  D_planoconta:='11101002';
+  D_pgto:=copy(DateToStr(date),7,4)+'/'+
+  copy(DateToStr(date),4,2)+'/'+copy(DateToStr(date),1,2);
+  D_valorpago:=StringToFloat(FrmVendaRefaturar.edareceber.Text);
+
+  FrmVendaRefaturar.qratualizar.close;
+  FrmVendaRefaturar.qratualizar.sql.clear;
+  FrmVendaRefaturar.qratualizar.sql.add('update docreceber set');
+  FrmVendaRefaturar.qratualizar.sql.add('conta = :D_conta,');
+  FrmVendaRefaturar.qratualizar.sql.add('planoconta = :D_planoconta,');
+  FrmVendaRefaturar.qratualizar.sql.add('pgto = :D_pgto,');
+  FrmVendaRefaturar.qratualizar.sql.add('valorpago = :D_valorpago');
+  FrmVendaRefaturar.qratualizar.SQL.Add('where (cliente = '+FrmVendaRefaturar.edcliente.Text+')');
+  FrmVendaRefaturar.qratualizar.SQL.Add('and (pgto is null)');
+  FrmVendaRefaturar.qratualizar.SQL.Add('and (tipo ='+chr(39)+'SD'+chr(39)+')');
+  FrmVendaRefaturar.qratualizar.Params[0].Value := D_conta;
+  FrmVendaRefaturar.qratualizar.Params[1].Value := D_planoconta;
+  FrmVendaRefaturar.qratualizar.Params[2].Value := D_pgto;
+  FrmVendaRefaturar.qratualizar.Params[3].Value := D_valorpago;
+  FrmVendaRefaturar.qratualizar.ExecSQL;
+
+  R_hora:=TimeToStr(time);
+  FrmVendaRefaturar.qratualizar.Close;
+  FrmVendaRefaturar.qratualizar.SQL.Clear;
+  FrmVendaRefaturar.qratualizar.SQL.Add('CALL sp_i_rastro(:r_data, :r_hora, :r_operador, :r_rotina, :r_operacao, :r_historico, :r_favorecido, :r_valor, :r_obs)');
+  FrmVendaRefaturar.qratualizar.Params[0].Value := date;
+  FrmVendaRefaturar.qratualizar.Params[1].Value := R_hora;
+  FrmVendaRefaturar.qratualizar.Params[2].Value := FrmPrincipal.sb.Panels[3].Text;
+  FrmVendaRefaturar.qratualizar.Params[3].Value := 'DOC. RECEBER';
+  FrmVendaRefaturar.qratualizar.Params[4].Value := 'B';
+  FrmVendaRefaturar.qratualizar.Params[5].Value := 'Via Venda: '+FrmVendaRefaturar.p_venda.Caption;
+  FrmVendaRefaturar.qratualizar.Params[6].Value := FrmVendaRefaturar.edcliente.Text;
+  FrmVendaRefaturar.qratualizar.Params[7].Value := D_valorpago;
+  FrmVendaRefaturar.qratualizar.Params[8].Value := '';
+  FrmVendaRefaturar.qratualizar.ExecSQL;
+end;
+
 procedure FecharVenda;
 begin
   if 1 = 1 then
   begin
+    n_pgto := FrmVendaRefaturar.cdsPagamento.RecordCount;
+
+
     texto:='INICIAR REC. VENDA : '+FrmVendaRefaturar.p_venda.Caption;
     R_hora:=TimeToStr(time);
     FrmVendaRefaturar.qratualizar.Close;
@@ -361,7 +467,8 @@ begin
       begin
         dm.formapagto.Locate('codigo', cdsPagamentoforma.Value, []);
 
-        if (cdsPagamentoforma.Value = 'CC') or (cdsPagamentoforma.Value = 'CD') or (cdsPagamentoforma.Value = 'SD') then
+        if (cdsPagamentoforma.Value = 'CC') or (cdsPagamentoforma.Value = 'CD') or
+           (cdsPagamentoforma.Value = 'SH') or (cdsPagamentoforma.Value = 'SD') then
         begin
           vlrcheques              :=  0;
           vlrcompra               :=  cdsPagamentovalor.Value;
@@ -438,6 +545,7 @@ begin
                     dataparc:=dataparc+intervalo;
 
                   dm.docrecebervencto.Value:=dataparc;
+                  dm.docrecebervalor.Value:=vlrparcela;
                   dm.docreceberliquido.Value:=dm.docrecebervalor.Value;
                 end;
 
@@ -464,14 +572,6 @@ begin
     end;
   end;
 
-    vtotal:=StringToFloat(FrmVendaRefaturar.edValTotal.Text);
-
-    if FrmVendaRefaturar.edValDesconto.Text<>'' then
-      vdesconto:=StringToFloat(FrmVendaRefaturar.edValDesconto.Text)
-    else
-      vdesconto:=0;
-
-    total:=vtotal+vdesconto;
 
     if (StringToFloat(FrmVendaRefaturar.edValDinheiro.Text) > 0) then
        begin
@@ -498,7 +598,7 @@ begin
 
     if (StringToFloat(FrmVendaRefaturar.edValCheque.Text) > 0) then
        begin
-         vformapagto:='CA';
+         vformapagto:='SH';
          vtotal     :=StringToFloat(FrmVendaRefaturar.edValCheque.Text);
          qtdparc    := 1;
          InserirVenda;
@@ -520,7 +620,18 @@ begin
          InserirVenda;
        end;
 
-    InserirEstoque;
+    if FrmVendaRefaturar.edcliente.Text<>'30' then
+       InserirEstoque;
+
+    if (StringToFloat(FrmVendaRefaturar.edareceber.Text) > 0) then
+       BaixarFaturado;
+
+    FrmVendaRefaturar.qratualizar.close;
+    FrmVendaRefaturar.qratualizar.sql.clear;
+    FrmVendaRefaturar.qratualizar.SQL.Add('CALL sp_a_pedidosvenda(:p_pedido, :p_n_doc)');
+    FrmVendaRefaturar.qratualizar.Params[0].Value := FrmVendaRefaturar.qrpedidopedido.Value;
+    FrmVendaRefaturar.qratualizar.Params[1].Value := FrmVendaRefaturar.p_venda.Caption;
+    FrmVendaRefaturar.qratualizar.ExecSQL;
 
     texto:='FINALIZAR REC. VENDA : '+FrmVendaRefaturar.p_venda.Caption;
     R_hora:=TimeToStr(time);
@@ -538,6 +649,9 @@ begin
     FrmVendaRefaturar.qratualizar.Params[8].Value := '';
     FrmVendaRefaturar.qratualizar.ExecSQL;
 
+    FrmVendaRefaturar.qrpedido.Close;
+    FrmVendaRefaturar.qrpedido.Open;
+
     FrmVendaRefaturar.LimpaCampos;
     FrmVendaRefaturar.p_venda.Caption           :=  '';
     FrmVendaRefaturar.edvendedor.Text           :=  '';
@@ -553,20 +667,16 @@ end;
 
 procedure ReconectarBD;
 begin
-  dm.ZConnection1.Connected:=false;
-  while dm.ZConnection1.Connected=false do
-        begin
-          try
-            dm.ZConnection1.Connected:=false;
-            dm.ZConnection1.Database:='vieir463_gestor_caramelle';
-            dm.ZConnection1.HostName:='vieirasistemas.com.br';
-            dm.ZConnection1.User:='vieir463_cliente';
-            dm.ZConnection1.Password:='AW3se4DR5ft6*#';
-            dm.ZConnection1.Connected:=true;
-          except
-            application.messagebox('Tente Novamente','Atenção! Sistema Fora do Ar',mb_ok+mb_iconexclamation);
-          end;
-        end;
+  try
+    dm.ZConnection1.Connected:=false;
+    dm.ZConnection1.Database:='vieir463_gestor_gynbox';
+    dm.ZConnection1.HostName:='vieirasistemas.com.br';
+    dm.ZConnection1.Password:='AW3se4DR5ft6*#';
+    dm.ZConnection1.User:='vieir463_cliente';
+    dm.ZConnection1.Connected:=true;
+  except
+    application.messagebox('Tente Novamente','Atenção! Sistema Fora do Ar');
+  end;
 end;
 
 function TFrmVendaRefaturar.DescontaTaxaCartao(cartao: integer;
@@ -852,6 +962,13 @@ end;
 
 procedure TFrmVendaRefaturar.edValDinheiroExit(Sender: TObject);
 begin
+  if not cdsPagamento.Active then
+     begin
+       showmessage('Pressione F12 para Efetuar o Pagamento!!!');
+       edcodbarra.SetFocus;
+       exit;
+     end;
+
   CalculaTudo(Sender);
 
   if (StringParaFloat(edValDinheiro.Text) > 0) then
@@ -879,6 +996,13 @@ end;
 
 procedure TFrmVendaRefaturar.edValCreditoExit(Sender: TObject);
 begin
+  if not cdsPagamento.Active then
+     begin
+       showmessage('Pressione F12 para Efetuar o Pagamento!!!');
+       edcodbarra.SetFocus;
+       exit;
+     end;
+
   CalculaTudo(Sender);
 
   if (StringParaFloat(edValCredito.Text) > 0) then
@@ -969,6 +1093,13 @@ end;
 
 procedure TFrmVendaRefaturar.edValDebitoExit(Sender: TObject);
 begin
+  if not cdsPagamento.Active then
+     begin
+       showmessage('Pressione F12 para Efetuar o Pagamento!!!');
+       edcodbarra.SetFocus;
+       exit;
+     end;
+
   CalculaTudo(Sender);
 
   if (StringParaFloat(edValDebito.Text) > 0) then
@@ -1053,17 +1184,24 @@ end;
 
 procedure TFrmVendaRefaturar.edValChequeExit(Sender: TObject);
 begin
+  if not cdsPagamento.Active then
+     begin
+       showmessage('Pressione F12 para Efetuar o Pagamento!!!');
+       edcodbarra.SetFocus;
+       exit;
+     end;
+
   CalculaTudo(Sender);
 
   if (StringParaFloat(edValCheque.Text) > 0) then
   begin
     n_pgto:=n_pgto+1;
-    if (cdsPagamento.Locate('forma', 'CA', [])) then
+    if (cdsPagamento.Locate('forma', 'SH', [])) then
       cdsPagamento.Edit
     else
       cdsPagamento.Append;
 
-    cdsPagamentoforma.Value           :=  'CA';
+    cdsPagamentoforma.Value           :=  'SH';
     cdsPagamentovalor.Value           :=  StringParaFloat(edValCheque.Text);
     cdsPagamentocartao.Value          :=  0;
     cdsPagamentoparcela.Value         :=  1;
@@ -1073,7 +1211,7 @@ begin
   end
   else
   begin
-    if (cdsPagamento.Locate('forma', 'CA', [])) then
+    if (cdsPagamento.Locate('forma', 'SH', [])) then
       cdsPagamento.Delete;
   end;
 end;
@@ -1370,6 +1508,13 @@ end;
 }
 procedure TFrmVendaRefaturar.eddepositoExit(Sender: TObject);
 begin
+  if not cdsPagamento.Active then
+     begin
+       showmessage('Pressione F12 para Efetuar o Pagamento!!!');
+       edcodbarra.SetFocus;
+       exit;
+     end;
+
   CalculaTudo(Sender);
 
   if (StringParaFloat(eddeposito.Text) > 0) then
@@ -1395,13 +1540,15 @@ begin
   end;
 end;
 
-procedure TFrmVendaRefaturar.FormActivate(Sender: TObject);
-begin
-//  dm.ZConnection1.Connected:=false;
-end;
-
 procedure TFrmVendaRefaturar.edfaturadoExit(Sender: TObject);
 begin
+  if not cdsPagamento.Active then
+     begin
+       showmessage('Pressione F12 para Efetuar o Pagamento!!!');
+       edcodbarra.SetFocus;
+       exit;
+     end;
+
   CalculaTudo(Sender);
 
   if (StringParaFloat(edfaturado.Text) > 0) then
@@ -1502,6 +1649,7 @@ end;
 
 procedure TFrmVendaRefaturar.FormShow(Sender: TObject);
 begin
+  qrpedidosC.Top:=1;
   Caixa := frmprincipal.sb.Panels[3].Text;
 end;
 
@@ -1634,13 +1782,13 @@ procedure ConectarBD;
 begin
   try
     dm.ZConnection1.Connected:=false;
-    dm.ZConnection1.Database:='vieir463_gestor_caramelle';
+    dm.ZConnection1.Database:='vieir463_gestor_gynbox';
     dm.ZConnection1.HostName:='vieirasistemas.com.br';
-    dm.ZConnection1.User:='vieir463_cliente';
     dm.ZConnection1.Password:='AW3se4DR5ft6*#';
+    dm.ZConnection1.User:='vieir463_cliente';
     dm.ZConnection1.Connected:=true;
   except
-    application.messagebox('Tente Novamente','Atenção! Sistema Fora do Ar',mb_ok+mb_iconexclamation);
+    application.messagebox('Tente Novamente','Atenção! Sistema Fora do Ar');
   end;
 end;
 
@@ -1896,6 +2044,16 @@ end;
 procedure TFrmVendaRefaturar.edcodbarraKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
+  if key=vk_f10 then
+     begin
+       try
+         Application.CreateForm(TFrmCadProdutos, FrmCadProdutos);
+         FrmCadProdutos.showmodal;
+       finally
+         FrmCadProdutos.Release;
+         FrmCadProdutos:=nil;
+       end;
+     end;
   if key=vk_f11 then
      begin
         busca := '';
@@ -1944,16 +2102,19 @@ begin
         cdsPagamento.CreateDataSet;
 
         valoratraso:=0;
-        dm.Totaldocreceber.Close;
-        dm.Totaldocreceber.SQL.Clear;
-        dm.Totaldocreceber.SQL.Add('select sum(D.liquido) as total from clientes C, docreceber D');
-        dm.Totaldocreceber.SQL.Add('where (D.cliente=C.codigo) and (D.pgto is null)');
-        dm.Totaldocreceber.SQL.Add('and (D.cliente = '+edcliente.Text+')');
-        dm.Totaldocreceber.open;
-        if dm.Totaldocrecebertotal.Value>0 then
+        if edcliente.Text<>'7' then
            begin
-             valoratraso:=dm.Totaldocreceber['total'];
-             edareceber.Text        := FormatFloat('#,##0.00', valoratraso);
+             dm.Totaldocreceber.Close;
+             dm.Totaldocreceber.SQL.Clear;
+             dm.Totaldocreceber.SQL.Add('select sum(D.liquido) as total from clientes C, docreceber D');
+             dm.Totaldocreceber.SQL.Add('where (D.cliente=C.codigo) and (D.pgto is null)');
+             dm.Totaldocreceber.SQL.Add('and (D.cliente = '+edcliente.Text+')');
+             dm.Totaldocreceber.open;
+             if dm.Totaldocrecebertotal.Value>0 then
+                begin
+                  valoratraso:=dm.Totaldocreceber['total'];
+                  edareceber.Text        := FormatFloat('#,##0.00', valoratraso);
+                end;
            end;
 
         edValSubtotal.Text        :=
@@ -1993,6 +2154,187 @@ begin
        else if edcodbarra.Text='' then
           edcodbarra.SetFocus;
      end;
+end;
+
+procedure TFrmVendaRefaturar.chVendasPedidosClick(Sender: TObject);
+begin
+  if chVendasPedidos.Checked=true then
+     begin
+       qrpedidosC.Enabled:=true;
+       qrpedidosC.Visible:=true;
+       qrpedidosI.Enabled:=true;
+       qrpedidosI.Visible:=true;
+       gb1.Enabled:=true;
+     end
+     else
+     begin
+       qrpedidosC.Enabled:=false;
+       qrpedidosC.Visible:=false;
+       qrpedidosI.Enabled:=false;
+       qrpedidosI.Visible:=false;
+       gb1.Enabled:=false;
+     end;
+end;
+
+procedure TFrmVendaRefaturar.EfetuarRecebimento1Click(Sender: TObject);
+begin
+  if qrpedido.Active=false then
+     begin
+       showmessage('Atualize a Lista de Pedidos!!!');
+       exit;
+     end;
+
+  if qrpedido.RecordCount<1 then
+     begin
+       showmessage('Pedidos Zerados!!!');
+       exit;
+     end;
+
+  edcliente.Text  := qrpedidocliente.AsString;
+  edvendedor.Text := qrpedidovendedor.AsString;
+
+  qry              :=  TZQuery.Create(nil);
+  qry.Connection   :=  dm.ZConnection1;
+  qry.SQL.Clear;
+  qry.SQL.Add('select apelido,ultvenda from fornecedores');
+  qry.SQL.Add('where codigo = '+edvendedor.Text);
+  qry.Open;
+  lbvendedor.Caption := qry.fieldbyname('apelido').AsString;
+  v := 0;
+  IniciarVenda;
+  qry.Free;
+
+  dm.movpedido.Close;
+  dm.movpedido.SQL.Clear;
+  dm.movpedido.SQL.Add('select * from movpedido');
+  dm.movpedido.SQL.Add('where venda = '+qrpedidopedido.AsString);
+  dm.movpedido.open;
+  while not dm.movpedido.Eof do
+        begin
+          qratualizar.Close;
+          qratualizar.SQL.Clear;
+          qratualizar.SQL.Add('CALL sp_i_movvenda(:m_seq, :m_vendaI, :m_produto, :m_qtd, :m_unit, :m_total)');
+          qratualizar.Params[0].Value := v;
+          qratualizar.Params[1].Value := p_venda.Caption;
+          qratualizar.Params[2].Value := dm.movpedidoproduto.Value;
+          qratualizar.Params[3].Value := dm.movpedidoqtd.Value;
+          qratualizar.Params[4].Value := dm.movpedidounit.Value;
+          qratualizar.Params[5].Value := dm.movpedidototal.Value;
+          qratualizar.ExecSQL;
+          dm.movpedido.Next;
+          v:=v+1;
+        end;
+  dm.movpedido.Close;
+
+  TotalizarVenda;
+
+  LimpaCampos;
+
+  cdsPagamento.Close;
+  cdsPagamento.CreateDataSet;
+
+  valoratraso:=0;
+{
+  if edcliente.Text<>'' then
+     begin
+       dm.Totaldocreceber.Close;
+       dm.Totaldocreceber.SQL.Clear;
+       dm.Totaldocreceber.SQL.Add('select sum(D.liquido) as total from clientes C, docreceber D');
+       dm.Totaldocreceber.SQL.Add('where (D.cliente=C.codigo) and (D.pgto is null)');
+       dm.Totaldocreceber.SQL.Add('and (D.cliente = '+edcliente.Text+')');
+       dm.Totaldocreceber.open;
+       if dm.Totaldocrecebertotal.Value>0 then
+          begin
+            valoratraso:=dm.Totaldocreceber['total'];
+            edareceber.Text        := FormatFloat('#,##0.00', valoratraso);
+          end;
+     end;
+}
+  edValSubtotal.Text        :=
+    FormatFloat('#,##0.00', FrmVendaRefaturar.qrtotalizartotal.Value+valoratraso);
+  edValTotal.Text        :=
+    FormatFloat('#,##0.00', FrmVendaRefaturar.qrtotalizartotal.Value+valoratraso);
+
+  edValDinheiro.Text        := FormatFloat('#,##0.00', FrmVendaRefaturar.qrtotalizartotal.Value+valoratraso);
+
+  CalculaTudo(edValDinheiro, False);
+  n_pgto:=0;
+  edValDinheiro.SetFocus;
+  Exit;
+end;
+
+Procedure TotalizarMovPedido;
+begin
+  FrmVendaRefaturar.qrtotalizar.Close;
+  FrmVendaRefaturar.qrtotalizar.SQL.Clear;
+  FrmVendaRefaturar.qrtotalizar.SQL.Add('select count(*) as itens,sum(total) as total from movpedido');
+  FrmVendaRefaturar.qrtotalizar.SQL.Add('where venda = '+FrmVendaRefaturar.qrpedidopedido.AsString);
+  FrmVendaRefaturar.qrtotalizar.Open;
+  itens:=FrmVendaRefaturar.qrtotalizaritens.Value;
+  total:=FrmVendaRefaturar.qrtotalizartotal.Value;
+  FrmVendaRefaturar.editens.Text:=FloatToStr(itens);
+  FrmVendaRefaturar.edtotal.Text:=formatfloat('#,##0.00',total);
+end;
+
+procedure TFrmVendaRefaturar.qrpedidosCCellClick(Column: TColumn);
+begin
+  try
+    if qrpedido.RecordCount<1 then
+       begin
+         showmessage('Sem Pedidos!!!');
+         exit;
+       end;
+
+    qrmovpedido.Close;
+    qrmovpedido.SQL.Clear;
+    qrmovpedido.SQL.Add('select M.venda,M.produto,P.nome,M.und,M.qtd,M.descp,M.descv,');
+    qrmovpedido.SQL.Add('M.unit,M.total,M.seq,M.icms');
+    qrmovpedido.SQL.Add('from movpedido M, produtos P');
+    qrmovpedido.SQL.Add('where M.produto=P.codigo');
+    qrmovpedido.SQL.Add('and M.venda = '+chr(39)+qrpedidopedido.AsString+chr(39));
+    qrmovpedido.SQL.Add('order by nome');
+    qrmovpedido.open;
+    TotalizarMovPedido;
+  except
+    showmessage('Atualize a Lista de Pedidos!!!');
+    exit;
+  end;
+end;
+
+procedure TFrmVendaRefaturar.AtualizarPedidos1Click(Sender: TObject);
+begin
+  qrpedido.Close;
+  qrpedido.SQL.Clear;
+  qrpedido.SQL.Add('select C.nome,P.pedido,P.data,P.cliente,P.vendedor,P.itens,P.total,P.subtotal,P.descp,P.liberacao,P.nf,P.tipo');
+  qrpedido.SQL.Add('from clientes C, pedidos P');
+  qrpedido.SQL.Add('where P.cliente=C.codigo');
+  qrpedido.SQL.Add('and P.liberacao is not null');
+  qrpedido.SQL.Add('and P.n_doc is null');
+  qrpedido.SQL.Add('order by C.nome');
+  qrpedido.open;
+end;
+
+procedure TFrmVendaRefaturar.Consulta1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFrmVenda, FrmVenda);
+    FrmVenda.showmodal;
+  finally
+    FrmVenda.Release;
+    FrmVenda:=nil;
+  end;
+end;
+
+procedure TFrmVendaRefaturar.RelatriodeFechamentodeVendas1Click(
+  Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFrmFechamentoVenda, FrmFechamentoVenda);
+    FrmFechamentoVenda.showmodal;
+  finally
+    FrmFechamentoVenda.Release;
+    FrmFechamentoVenda:=nil;
+  end;
 end;
 
 end.

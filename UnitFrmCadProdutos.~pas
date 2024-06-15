@@ -78,6 +78,8 @@ type
     AlterarComisso1: TMenuItem;
     N1: TMenuItem;
     AlterarCdigodoProduto1: TMenuItem;
+    AlteraroNCMdosprodutos1: TMenuItem;
+    N2: TMenuItem;
     procedure btnovoClick(Sender: TObject);
     procedure btgravarClick(Sender: TObject);
     procedure btcancelarClick(Sender: TObject);
@@ -135,6 +137,11 @@ type
     procedure AlterarComisso1Click(Sender: TObject);
     procedure edestoqueExit(Sender: TObject);
     procedure AlterarCdigodoProduto1Click(Sender: TObject);
+    procedure AlteraroNCMdosprodutos1Click(Sender: TObject);
+    procedure edncmEnter(Sender: TObject);
+    procedure edncmExit(Sender: TObject);
+    procedure edcodbarraEnter(Sender: TObject);
+    procedure edcodbarraExit(Sender: TObject);
   private
     { Private declarations }
   public
@@ -144,12 +151,13 @@ type
 
 var
   FrmCadProdutos: TFrmCadProdutos;
+  novo:boolean;
 
 implementation
 
 uses Unitdm, UnitFrmPrincipal, UnitFrmCadFornecedores, UnitFrmEstoque,
   UnitFrmNotasFiscais, UnitFrmEtiquetasImp,
-  UnitFrmGrupo;
+  UnitFrmGrupo, UnitFrmVendaRefaturar, UnitFrmPedidos;
 
 {$R *.dfm}
 
@@ -480,8 +488,10 @@ begin
          dm.produtosnome.Value:=ednome.Text;
          if cbgrupo.Text<>'' then
             dm.produtosgrupo.value:=copy(cbgrupo.Text,1,4);
+         if edcodbarra.Text<>'' then
+            dm.produtoscodbarra.value:=edcodbarra.Text;
          dm.produtosreferencia.value:=Edreferencia.Text;
-         dm.produtosreferencia.value:=Edreferencia.Text;
+         dm.produtosncm.value:=edncm.Text;
          if edqtd.Text<>'' then
             dm.produtosqtdemb.value:=StringToFloat(Edqtd.Text);
          dm.produtosundint.value:=edundint.Text;
@@ -514,7 +524,7 @@ begin
          qratualizar.Close;
          qratualizar.SQL.Clear;
          qratualizar.SQL.Add('CALL sp_a_produtos(:p_codigo, :p_nome, :p_codbarra, :p_grupo, :p_referencia, :p_qtdemb, :p_undint,'+
-         ':p_undext, :p_estmin, :p_estmax, :p_prazores, :p_fornecedor, :p_ativo, :p_compra, :p_venda, :p_atacado, :p_comissao)');
+         ':p_undext, :p_estmin, :p_estmax, :p_prazores, :p_fornecedor, :p_ativo, :p_compra, :p_venda, :p_atacado, :p_comissao, :p_ncm)');
          qratualizar.Params[0].Value := lbcodigo.Caption;
          qratualizar.Params[1].Value := ednome.Text;
          qratualizar.Params[2].Value := edcodbarra.Text;
@@ -555,13 +565,14 @@ begin
          else
             qratualizar.Params[14].Value := 0;
          if edatacado.Text<>'' then
-            qratualizar.Params[14].Value := StringToFloat(edatacado.Text)
-         else
-            qratualizar.Params[14].Value := 0;
-         if edcomissao.Text<>'' then
-            qratualizar.Params[15].Value := StringToFloat(edcomissao.Text)
+            qratualizar.Params[15].Value := StringToFloat(edatacado.Text)
          else
             qratualizar.Params[15].Value := 0;
+         if edcomissao.Text<>'' then
+            qratualizar.Params[16].Value := StringToFloat(edcomissao.Text)
+         else
+            qratualizar.Params[16].Value := 0;
+         qratualizar.Params[17].Value := edncm.Text;
          qratualizar.ExecSQL;
        end;
       R_hora:=TimeToStr(time);
@@ -876,7 +887,14 @@ end;
 
 procedure TFrmCadProdutos.FormShow(Sender: TObject);
 begin
+  dm.produtos.Close;
+  dm.produtos.SQL.Clear;
+  dm.produtos.SQL.Add('select * from produtos');
+  dm.produtos.Open;
+  dm.produtos.Close;
+
   ListarGrupos;
+
   PageControl1.ActivePageIndex := 0;
   edpesquisa.SetFocus;
 end;
@@ -961,6 +979,26 @@ begin
                   modalresult := mrok;
                 end;
            end
+        else if assigned(FrmVendaRefaturar) then
+           begin
+             if (dm.produtos.Active) and (dm.produtos.RecordCount>0) then
+                begin
+                  FrmVendaRefaturar.edcodbarra.Text:=IntToStr(dm.produtoscodigo.value);
+                  FrmVendaRefaturar.edcodbarra.SelStart:=0;
+                  FrmVendaRefaturar.edcodbarra.SelLength:=length(FrmVendaRefaturar.edcodbarra.Text);
+                  modalresult := mrok;
+                end;
+           end
+        else if assigned(FrmPedidos) then
+           begin
+             if (dm.produtos.Active) and (dm.produtos.RecordCount>0) then
+                begin
+                  FrmPedidos.edcodigo.Text:=IntToStr(dm.produtoscodigo.value);
+                  FrmPedidos.edcodigo.SelStart:=0;
+                  FrmPedidos.edcodigo.SelLength:=length(FrmPedidos.edcodigo.Text);
+                  modalresult := mrok;
+                end;
+           end
         else if assigned(FrmEtiquetasImp) then
            begin
              if (dm.produtos.Active) and (dm.produtos.RecordCount>0) then
@@ -1039,13 +1077,13 @@ procedure TFrmCadProdutos.BitBtn6Click(Sender: TObject);
 begin
   try
     dm.ZConnection1.Connected:=false;
-    dm.ZConnection1.Database:='vieir463_gestor_caramelle';
+    dm.ZConnection1.Database:='vieir463_gestor_gynbox';
     dm.ZConnection1.HostName:='vieirasistemas.com.br';
-    dm.ZConnection1.User:='vieir463_cliente';
     dm.ZConnection1.Password:='AW3se4DR5ft6*#';
+    dm.ZConnection1.User:='vieir463_cliente';
     dm.ZConnection1.Connected:=true;
   except
-    application.messagebox('Tente Novamente','Atenção! Sistema Fora do Ar',mb_ok+mb_iconexclamation);
+    application.messagebox('Tente Novamente','Atenção! Sistema Fora do Ar');
   end;
 end;
 
@@ -1066,7 +1104,7 @@ begin
   dm.usuarios.Close;
   dm.usuarios.Open;
   dm.usuarios.Locate('nome',FrmPrincipal.sb.Panels[3].Text,[]);
-  if dm.usuariosusuarios.value='5' then
+  if dm.usuariosparametros.value='5' then
     begin
        if dm.produtos.RecordCount<1 then
           begin
@@ -1197,6 +1235,68 @@ begin
     end
     else
       application.MessageBox('Contate a Diretoria','Atenção',mb_ok+MB_ICONINFORMATION);
+end;
+
+procedure TFrmCadProdutos.AlteraroNCMdosprodutos1Click(Sender: TObject);
+begin
+  if dm.produtos.RecordCount<1 then
+    begin
+      showmessage('Consulte um Produto!!!');
+      Exit;
+    end;
+  busca := '';
+  ClickedOK := InputQuery('Digite o NCM do(s) Produto(s)', 'Alterar o NCM do(s) Produto(s)', busca);
+  if ClickedOK then
+    begin
+      while not dm.produtos.Eof do
+            begin
+              qratualizar.close;
+              qratualizar.sql.clear;
+              qratualizar.sql.add('update produtos set');
+              qratualizar.sql.add('ncm = :busca');
+              qratualizar.sql.add('where codigo = '+dm.produtoscodigo.AsString);
+              qratualizar.Params[0].Value := busca;
+              qratualizar.ExecSQL;
+
+              qratualizar.Close;
+              qratualizar.SQL.Clear;
+              qratualizar.SQL.Add('CALL sp_i_rastro(:r_data, :r_hora, :r_operador, :r_rotina, :r_operacao, :r_historico, :r_favorecido, :r_valor, :r_obs)');
+              qratualizar.Params[0].Value := date;
+              qratualizar.Params[1].Value := TimeToStr(time);
+              qratualizar.Params[2].Value := FrmPrincipal.sb.Panels[3].Text;
+              qratualizar.Params[3].Value := 'PRODUTOS';
+              qratualizar.Params[4].Value := 'A';
+              qratualizar.Params[5].Value := 'NCM: '+busca;
+              qratualizar.Params[6].Value := dm.produtoscodigo.AsInteger;
+              qratualizar.Params[7].Value := 0;
+              qratualizar.Params[8].Value := '';
+              qratualizar.ExecSQL;
+              dm.produtos.Next;
+            end;
+
+      dm.produtos.Close;
+      dm.produtos.Open;
+    end;
+end;
+
+procedure TFrmCadProdutos.edncmEnter(Sender: TObject);
+begin
+  edncm.Color:=$0080FFFF;
+end;
+
+procedure TFrmCadProdutos.edncmExit(Sender: TObject);
+begin
+  edncm.Color:=clWindow;
+end;
+
+procedure TFrmCadProdutos.edcodbarraEnter(Sender: TObject);
+begin
+  edcodbarra.Color:=$0080FFFF;
+end;
+
+procedure TFrmCadProdutos.edcodbarraExit(Sender: TObject);
+begin
+  edcodbarra.Color:=clWindow;
 end;
 
 end.

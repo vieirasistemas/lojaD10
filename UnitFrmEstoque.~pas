@@ -75,6 +75,7 @@ type
     chSintetico: TCheckBox;
     lbqtd: TLabel;
     Label9: TLabel;
+    BitBtn5: TBitBtn;
     procedure FormShow(Sender: TObject);
     procedure eddocExit(Sender: TObject);
     procedure medataIExit(Sender: TObject);
@@ -121,6 +122,7 @@ type
     procedure DBGrid2KeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure BitBtn4Click(Sender: TObject);
+    procedure BitBtn5Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -131,18 +133,18 @@ var
   FrmEstoque: TFrmEstoque;
   E_vendedor,mes,i,x,casas,CodCliente:integer;
   anterior,antestoque,LocOrigem,
-  LocDestino,P_estoqueext,QtdP:real;
+  Valorbase,LocDestino,P_estoqueext,QtdP:real;
   P_ativo,R_hora,prod,mascara,vfechada,busca:string;
   comp : array [0..20] of string;
   comp1 : array [0..20] of string;
   check,ClickedOK:boolean;
   IMPRESSORA:TextFile;
-  qry : TZQuery;
+  qrytot,qryN,qrymun,qry : TZQuery;
 
 implementation
 
 uses Unitdm, UnitFrmCadClientes, UnitFrmCadfornecedores,
-  UnitFrmPrincipal, UnitFrmEstoqueRel, UnitFrmCadProdutos;
+  UnitFrmPrincipal, UnitFrmEstoqueRel, UnitFrmCadProdutos, UEnvioNfe;
 
 {$R *.dfm}
 
@@ -179,6 +181,23 @@ begin
   end;
   end;
   Result := StrToFloat(t);
+end;
+
+Function RemoveAcentos(Str:String): String;
+{Remove caracteres acentuados de uma string}
+Const ComAcento = '‡‚ÍÙ˚„ı·ÈÌÛ˙Á¸¿¬ ‘€√’¡…Õ”⁄«‹';
+  SemAcento = 'aaeouaoaeioucuAAEOUAOAEIOUCU';
+Var
+x : Integer;
+Begin
+For x := 1 to Length(Str) do
+  Begin
+  if Pos(Str[x],ComAcento)<>0 Then
+  begin
+  Str[x] := SemAcento[Pos(Str[x],ComAcento)];
+  end;
+  end;
+Result := Str;
 end;
 
 procedure limpar;
@@ -334,7 +353,7 @@ begin
      end
      else
      begin
-       FrmEstoque.btexcluir.enabled:=fasle;
+       FrmEstoque.btexcluir.enabled:=false;
        FrmEstoque.btexcluirItem.enabled:=false;
      end;
   FrmEstoque.btrelatorio.enabled:=true;
@@ -1219,16 +1238,175 @@ begin
 end;
 
 procedure TFrmEstoque.BitBtn4Click(Sender: TObject);
+var
+arq: TextFile;
+linha,texto,nomebd,serv,senha,usu:string;
+begin
+  AssignFile ( arq, ExtractFilePath(Application.ExeName) +'configuracoes.ini');  //C:\Gestor
+  Reset ( arq );
+  ReadLn ( arq, linha );
+  while not Eof ( arq ) do
+  begin
+    texto:=trim(copy(linha,1,80));
+    if copy(texto,1,14)='BANCO DE DADOS' then
+       nomebd:=trim(copy(texto,16,80));
+    if copy(texto,1,8)='SERVIDOR' then
+       serv:=trim(copy(texto,10,80));
+    ReadLn ( arq, linha );
+  end;
+  CloseFile ( arq );
+
+  dm.ZConnection1.Connected:=false;
+  senha:='AW3se4DR5ft6*#';
+  usu:='vieir463_cliente';
+
+  while dm.ZConnection1.Connected=false do
+        begin
+          try
+            dm.ZConnection1.Connected:=false;
+            dm.ZConnection1.Database:=nomebd;
+            dm.ZConnection1.HostName:=serv;
+            dm.ZConnection1.Password:=senha;
+            dm.ZConnection1.User:=usu;
+            dm.ZConnection1.Connected:=true;
+          except
+            application.messagebox('Tente Novamente','AtenÁ„o! Sistema Fora do Ar');
+            Application.Terminate;
+          end;
+        end;
+end;
+
+procedure TFrmEstoque.BitBtn5Click(Sender: TObject);
 begin
   try
-    dm.ZConnection1.Connected:=false;
-    dm.ZConnection1.Database:='vieir463_gestor_caramelle';
-    dm.ZConnection1.HostName:='vieirasistemas.com.br';
-    dm.ZConnection1.User:='vieir463_cliente';
-    dm.ZConnection1.Password:='AW3se4DR5ft6*#';
-    dm.ZConnection1.Connected:=true;
-  except
-    application.messagebox('Tente Novamente','AtenÁ„o! Sistema Fora do Ar',mb_ok+mb_iconexclamation);
+    Application.CreateForm(TfEnvioNfe, fEnvioNfe);
+
+    dm.parametros.Close;
+    dm.parametros.Open;
+
+    if dm.parametrosCRT.Value = '3' then
+      fEnvioNfe.rbCRT.ItemIndex                   :=  0
+    else
+      fEnvioNfe.rbCRT.ItemIndex                   :=  1;
+
+    fEnvioNfe.edtEmitCNPJ.Text:=dm.parametroscnpj.Value;
+    fEnvioNfe.edtEmitIE.Text:=dm.parametrosie.Value;
+    fEnvioNfe.edtEmitRazao.Text:=RemoveAcentos(dm.parametrosrazaosocial.Value);
+    fEnvioNfe.edtEmitFantasia.Text:=RemoveAcentos(dm.parametrosfantasia.Value);
+    fEnvioNfe.edtEmitFone.Text:=dm.parametrosddd.Value+dm.parametrosfone1.Value;
+    fEnvioNfe.edtEmitCEP.Text:=dm.parametroscep.Value;
+    fEnvioNfe.edtEmitLogradouro.Text:=RemoveAcentos(dm.parametrosendereco.Value);
+    fEnvioNfe.edtEmitNumero.Text:=IntToStr(dm.parametrosnumero.Value);
+    fEnvioNfe.edtEmitComp.Text:='';
+    fEnvioNfe.edtEmitBairro.Text:=RemoveAcentos(dm.parametrosbairro.Value);
+    fEnvioNfe.edtEmitCodCidade.Text:=dm.parametrosCodigo_Municipio.Value;
+    fEnvioNfe.edtEmitCidade.Text:=RemoveAcentos(dm.parametroscidade.Value);
+    fEnvioNfe.edtEmitUF.Text:=dm.parametrosEstado.Value;
+
+    dm.clientes.close;
+    dm.clientes.sql.clear;
+    dm.clientes.sql.add('select * from clientes');
+    dm.clientes.sql.add('where codigo = '+edcliente.Text);
+    dm.clientes.open;
+
+    if length(dm.clientescpf.Value)>11 then
+       begin
+         fEnvioNfe.edtDestCNPJ.Text:=dm.clientescpf.Value;
+         if dm.clientesrg.Value<>'' then
+            fEnvioNfe.edtDestIE.Text:=dm.clientesrg.Value
+         else
+            fEnvioNfe.edtDestIE.Text:='';
+       end
+       else
+       begin
+         fEnvioNfe.edtDestCNPJ.Text:=dm.clientescpf.Value;
+         fEnvioNfe.edtDestIE.Text:='';
+       end;
+    fEnvioNfe.edtDestRazao.Text:=RemoveAcentos(dm.clientesnome.Value);
+    fEnvioNfe.edtDestFantasia.Text:=RemoveAcentos(dm.clientesnome.Value);
+    fEnvioNfe.edtDestFone.Text:=dm.clientesfone1.Value;
+    fEnvioNfe.edtDestCEP.Text:=dm.clientescep.Value;
+    fEnvioNfe.edtDestLogradouro.Text:=RemoveAcentos(dm.clientesendereco.Value);
+    fEnvioNfe.edtDestNumero.Text:='0';
+    fEnvioNfe.edtDestComp.Text:='';
+    fEnvioNfe.edtDestBairro.Text:=RemoveAcentos(dm.clientesbairro.Value);
+    fEnvioNfe.edtDestCidade.Text:=RemoveAcentos(dm.clientescidade.Value);
+    fEnvioNfe.edtDestUF.Text:=dm.clientesestado.Value;
+
+    qrymun              :=  TZQuery.Create(nil);
+    qrymun.Connection   :=  dm.ZConnection1;
+    qrymun.SQL.Add('select Codigo from municipios');
+    qrymun.sql.add('where Municipio = '+chr(39)+fEnvioNfe.edtDestCidade.Text+chr(39));
+    qrymun.sql.add('and UF = '+chr(39)+fEnvioNfe.edtDestUF.Text+chr(39));
+    qrymun.Open;
+
+    fEnvioNfe.edtDestCodCidade.Text:=qrymun.FieldByName('Codigo').AsString;
+    qrymun.Free;
+
+    fEnvioNfe.cbModeloDF.Text:='moNFe';
+    fEnvioNfe.btnSalvarConfig.Click;
+
+    fEnvioNfe.lbtipo.Caption:=copy(cbtipo.Text,1,2);
+    fEnvioNfe.cbPagamento.Text:='2 - Outros';
+
+    fEnvioNfe.edModelo.Text:='55';
+    fEnvioNfe.edSerie.Text:='1';
+    dm.cfop.Open;
+    if fEnvioNfe.edtEmitUF.Text = fEnvioNfe.edtDestUF.Text then
+       dm.cfop.Locate('codigo',5102,[])
+    else
+       dm.cfop.Locate('codigo',6102,[]);
+    fEnvioNfe.edNatureza.Text:=dm.cfopdescricao.Value;
+    fEnvioNfe.edCfop.Text:=dm.cfopcodigo.Value;
+    fEnvioNfe.cbtipo.Text:='1 - SaÌda';
+
+    qryN              :=  TZQuery.Create(nil);
+    qryN.Connection   :=  dm.ZConnection1;
+    qryN.SQL.Add('select documento from nf');
+    qryN.sql.add('where tipo ='+chr(39)+'S'+chr(39));
+    qryN.sql.add('order by documento desc');
+    qryN.Open;
+
+    if qryN.RecordCount>0 then
+       fEnvioNfe.edNota.Text:=IntToStr(qryN.FieldByName('documento').AsInteger+1)
+    else
+       fEnvioNfe.edNota.Text:='1';
+    qryN.Free;
+
+    fEnvioNfe.edEmissao.Text:=DateToStr(date);
+    fEnvioNfe.cbImpressao.Text:='1 - Retrato';
+
+    qrytot              :=  TZQuery.Create(nil);
+    qrytot.Connection   :=  dm.ZConnection1;
+    qrytot.Close;
+    qrytot.SQL.Clear;
+    qrytot.SQL.Add('select sum(vlrtotal) as totalgeral, sum(vlr50) as total50 from movestoque');
+    qrytot.SQL.Add('where documento ='+chr(39)+eddocumento.Text+chr(39));
+    qrytot.Open;
+    if qrytot.FieldByName('total50').AsFloat>0 then
+       Valorbase := qrytot.FieldByName('total50').AsFloat
+    else
+       Valorbase := qrytot.FieldByName('totalgeral').AsFloat;
+
+    fEnvioNfe.edValorProdutos.Text:=formatfloat('0.00',Valorbase);
+    fEnvioNfe.edValorNota.Text:=formatfloat('0.00',Valorbase);
+    if dm.parametrosCRT.Value = '3' then
+       begin
+         fEnvioNfe.edBaseIcms.Text:=formatfloat('0.00',Valorbase);
+         fEnvioNfe.edValorIcms.Text:=formatfloat('0.00',(Valorbase*dm.parametrosaliicms.value)/100);
+         fEnvioNfe.edAliquota.Text:=formatfloat('0.00',dm.parametrosaliicms.value);
+       end
+       else
+       begin
+         fEnvioNfe.edBaseIcms.Text:='0,00';
+         fEnvioNfe.edValorIcms.Text:='0,00';
+         fEnvioNfe.edAliquota.Text:='0';
+       end;
+    fEnvioNfe.lbvenda.Caption:=eddocumento.Text;
+    fEnvioNfe.showmodal;
+  finally
+    fEnvioNfe.Release;
+    fEnvioNfe:=nil;
   end;
 end;
 

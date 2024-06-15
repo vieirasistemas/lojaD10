@@ -296,6 +296,7 @@ type
     edchaveNE: TEdit;
     movestoquebaseicms: TFloatField;
     movestoquevlricms: TFloatField;
+    movestoquevlr50: TFloatField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btnInutilizarClick(Sender: TObject);
     procedure btnDataValidadeClick(Sender: TObject);
@@ -325,6 +326,9 @@ type
     procedure edtDestCodCidadeKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure cbfinalidadeExit(Sender: TObject);
+    procedure edCfopExit(Sender: TObject);
+    procedure edCfopKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -343,11 +347,12 @@ var
   p_icms,vlrredicms,totalredicms,valoricms:double;
   N_cancelada,N_NF,normal:string;
   Referenciada : TNFrefCollectionItem;
+  qry : TZQuery;
 
 implementation
 
 uses Frm_SelecionarCertificado, Frm_Status, Unitdm, Math,
-  UnitFrmNotasFiscais, UnitFrmMuncicipios;
+  UnitFrmNotasFiscais, UnitFrmMuncicipios, UnitFrmCFOP;
 
 {$R *.dfm}
 
@@ -855,7 +860,14 @@ procedure TfEnvioNfe.btnCancelarChaveClick(Sender: TObject);
 var
   Chave, idLote, CNPJ, Protocolo, Justificativa: string;
 begin
-  Chave := '';
+  dm.nf.Close;
+  dm.nf.sql.clear;
+  dm.nf.sql.add('select * from nf');
+  dm.nf.sql.add('where (documento ='+chr(39)+edNota.Text+chr(39)+')');
+  dm.nf.sql.add('and (tipo ='+chr(39)+'S'+chr(39)+')');
+  dm.nf.open;
+
+  Chave := dm.nfchaveNfe.Value;
   if not(InputQuery('WebServices Eventos: Cancelamento', 'Chave da NF-e', Chave)) then
      exit;
   Chave := Trim(OnlyNumber(Chave));
@@ -866,16 +878,7 @@ begin
   if not(InputQuery('WebServices Eventos: Cancelamento', 'CNPJ ou o CPF do autor do Evento', CNPJ)) then
      exit;
 
-  dm.nf.Close;
-  dm.nf.sql.clear;
-  dm.nf.sql.add('select * from nf');
-  dm.nf.sql.add('where (chaveNfe ='+chr(39)+Chave+chr(39)+')');
-  dm.nf.open;
-  if dm.nf.RecordCount>0 then
-     Protocolo:=dm.nfprotocoloNfe.Value
-  else
-     Protocolo:='';
-
+  Protocolo:=dm.nfprotocoloNfe.Value;
   if not(InputQuery('WebServices Eventos: Cancelamento', 'Protocolo de Autorização', Protocolo)) then
      exit;
   Justificativa := 'Justificativa do Cancelamento';
@@ -1259,7 +1262,7 @@ begin
 //  showmessage('GUIA PRODUTOS');
   movestoque.Close;
   movestoque.sql.Clear;
-  movestoque.sql.Add('select produto,sum(qtd) as qtd, und, VlrUnit,sum(VlrTotal) as VlrTotal,baseicms,vlricms from movestoque');
+  movestoque.sql.Add('select produto,sum(qtd) as qtd, und, VlrUnit,sum(VlrTotal) as VlrTotal,sum(vlr50) as vlr50,baseicms,vlricms from movestoque');
   movestoque.sql.add('where (documento = '+chr(39)+lbvenda.Caption+chr(39)+')');
   movestoque.SQL.Add('and (TipoMov = '+chr(39)+lbtipo.Caption+chr(39)+')');//vendaI
   movestoque.sql.Add('and (VlrTotal>0)');
@@ -1268,28 +1271,41 @@ begin
   idprod:=1;
   while not movestoque.Eof do
   begin
-    dm.produtos.close;
-    dm.produtos.sql.clear;
-    dm.produtos.sql.add('select * from produtos');
-    dm.produtos.sql.add('where codigo = '+IntToStr(movestoqueproduto.Value));
-    dm.produtos.open;
+    qry              :=  TZQuery.Create(nil);
+    qry.Connection   :=  dm.ZConnection1;
+    qry.Close;
+    qry.SQL.Clear;
+    qry.sql.add('select codigo,nome,ncm,undint,redicms from produtos');
+    qry.sql.add('where codigo = '+IntToStr(movestoqueproduto.Value));
+    qry.open;
 
     Produto               := NotaF.NFe.Det.New;
     Produto.Prod.nItem    := idprod; // Número sequencial, para cada item deve ser incrementado
-    Produto.Prod.cProd    := dm.produtoscodigo.AsString;
+    Produto.Prod.cProd    := qry.FieldByName('codigo').AsString;
     Produto.Prod.cEAN     := 'SEM GTIN';
-    Produto.Prod.xProd    := dm.produtosnome.AsString;
-    Produto.Prod.NCM      := dm.produtosncm.AsString; // Tabela NCM disponível em  http://www.receita.fazenda.gov.br/Aliquotas/DownloadArqTIPI.htm
+    Produto.Prod.xProd    := qry.FieldByName('nome').AsString;
+    Produto.Prod.NCM      := qry.FieldByName('ncm').AsString; // Tabela NCM disponível em  http://www.receita.fazenda.gov.br/Aliquotas/DownloadArqTIPI.htm
     Produto.Prod.CFOP     := edCfop.Text;
-    Produto.Prod.uCom     := dm.produtosundint.AsString;
+    Produto.Prod.uCom     := qry.FieldByName('undint').AsString;
     Produto.Prod.qCom     := movestoqueqtd.Value;
-    Produto.Prod.vUnCom   := movestoqueVlrUnit.Value;
-    Produto.Prod.vProd    := movestoqueVlrTotal.Value;
+    if movestoquevlr50.Value>0 then
+       begin
+         Produto.Prod.vUnCom   := movestoquevlr50.Value/movestoqueqtd.Value;
+         Produto.Prod.vProd    := movestoquevlr50.Value;
+       end
+       else
+       begin
+         Produto.Prod.vUnCom   := movestoqueVlrUnit.Value;
+         Produto.Prod.vProd    := movestoqueVlrTotal.Value;
+       end;
 
     Produto.Prod.cEANTrib  := 'SEM GTIN';
-    Produto.Prod.uTrib     := dm.produtosundint.AsString;
+    Produto.Prod.uTrib     := qry.FieldByName('undint').AsString;
     Produto.Prod.qTrib     := movestoqueqtd.Value;
-    Produto.Prod.vUnTrib   := movestoqueVlrUnit.Value;
+    if movestoquevlr50.Value>0 then
+       Produto.Prod.vUnTrib   := movestoquevlr50.Value/movestoqueqtd.Value
+    else
+       Produto.Prod.vUnTrib   := movestoqueVlrUnit.Value;
 
     Produto.Prod.vOutro    := 0;
     Produto.Prod.vFrete    := 0;
@@ -1330,10 +1346,10 @@ begin
         
         if StrToFloat(edAliquota.Text)>0 then
            begin
-             if (dm.produtosredicms.Value>0) and (NotaF.NFe.Emit.CRT in [crtRegimeNormal]) then
+             if (qry.FieldByName('redicms').Value>0) and (NotaF.NFe.Emit.CRT in [crtRegimeNormal]) then
                 begin
-                  pRedBC       := dm.produtosredicms.Value;
-                  vBC          := (movestoqueVlrTotal.Value*dm.produtosredicms.Value)/100;
+                  pRedBC       := qry.FieldByName('redicms').Value;
+                  vBC          := (movestoqueVlrTotal.Value*qry.FieldByName('redicms').Value)/100;
                   pICMS        := StrToFloat(edAliquota.Text);
                   vICMS        := RoundTo(vBC * (pICMS / 100),-2);
                 end
@@ -1366,10 +1382,10 @@ begin
            end
            else
            begin
-             if (dm.produtosredicms.Value>0) and (NotaF.NFe.Emit.CRT in [crtRegimeNormal]) then
+             if (qry.FieldByName('redicms').Value>0) and (NotaF.NFe.Emit.CRT in [crtRegimeNormal]) then
                 begin
                   CST               := cst20;
-                  pRedBC            := dm.produtosredicms.Value;
+                  pRedBC            := qry.FieldByName('redicms').Value;
                 end
                 else
                 begin
@@ -1413,6 +1429,7 @@ begin
       end;
     end;
 
+    qry.Free;
     movestoque.Next;
     idprod:=idprod+1;
   end;
@@ -1607,6 +1624,7 @@ end;
 procedure TfEnvioNfe.FormShow(Sender: TObject);
 begin
   dm.parametros.Open;
+{
   if dm.parametrosCRT.Value = '3' then
     rbCRT.ItemIndex                   :=  0
   else
@@ -1659,7 +1677,7 @@ begin
 
   edBaseIcms.Text  := formatfloat('0.00',totalredicms);
   edValorIcms.Text := formatfloat('0.00',valoricms);
-
+}
   if (lbtipo.Caption='SD') or (lbtipo.Caption='ED') then
      begin
        cbfinalidade.Text:='4-DEVOLUÇÃO';
@@ -1689,13 +1707,26 @@ begin
      end
      else
      begin
-       edrazaotransp.Text  := 'BRASPRESS TRANSPORTADORA URGENTES LTDA';
-       edendtransp.Text    := 'RUA DOS IPES LTS 2/3 SALA A 140';
-       edcidadetransp.Text := 'GOIANIA';
-       eduftransp.Text     := 'GO';
-       edcnpjcpftransp.Text:= '48740350001218';
-       edietransp.Text     := '103952543';
-       edqtdtransp.Text    := '1';
+       if Application.Messagebox ('Limpar Campos?','Atenção', Mb_YesNo+mb_iconquestion) = id_no then
+          begin
+            edrazaotransp.Text  := 'BRASPRESS TRANSPORTADORA URGENTES LTDA';
+            edendtransp.Text    := 'RUA DOS IPES LTS 2/3 SALA A 140';
+            edcidadetransp.Text := 'GOIANIA';
+            eduftransp.Text     := 'GO';
+            edcnpjcpftransp.Text:= '48740351001218';
+            edietransp.Text     := '103952543';
+            edqtdtransp.Text    := '1';
+          end
+          else
+          begin
+            edrazaotransp.Text  := '';
+            edendtransp.Text    := '';
+            edcidadetransp.Text := '';
+            eduftransp.Text     := '';
+            edcnpjcpftransp.Text:= '';
+            edietransp.Text     := '';
+            edqtdtransp.Text    := '1';
+          end;
      end;
 end;
 
@@ -1771,6 +1802,33 @@ begin
        lbchaveNE.Visible:=false;
        edchaveNE.Visible:=false;
        edchaveNE.Text:='';
+     end;
+end;
+
+procedure TfEnvioNfe.edCfopExit(Sender: TObject);
+begin
+  if edcfop.text<>'' then
+     begin
+       dm.cfop.Open;
+       if dm.cfop.Locate('codigo',edcfop.text,[]) then
+          edNatureza.Text:=dm.cfopdescricao.Value
+       else
+          edNatureza.Text:='';
+     end;
+end;
+
+procedure TfEnvioNfe.edCfopKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if key=vk_f10 then
+     begin
+       try
+         Application.CreateForm(TFrmCFOP, FrmCFOP);
+         FrmCFOP.showmodal;
+       finally
+         FrmCFOP.Release;
+         FrmCFOP:=nil;
+       end;
      end;
 end;
 

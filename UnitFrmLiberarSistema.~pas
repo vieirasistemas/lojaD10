@@ -85,7 +85,16 @@ begin
             liberacao:=copy(texto,7,4)+'/'+
             copy(texto,4,2)+'/'+copy(texto,1,2);
 
+            qratualizar.close;
+            qratualizar.sql.clear;
+            qratualizar.sql.add('update parametros set');
+            qratualizar.sql.add('liberacao = :liberacao');
+            qratualizar.Params[0].Value := liberacao;
+            qratualizar.ExecSQL;
 
+            application.MessageBox('Liberação Efetuada com Sucesso','Atenção',mb_ok+MB_ICONINFORMATION);
+
+{
             texto:=copy(dm.parametroscnpj.Value,13,2)+
             copy(dm.parametroscnpj.Value,8,1)+
             copy(dm.parametroscnpj.Value,6,1)+
@@ -162,6 +171,7 @@ begin
              qratualizarNET.ExecSQL;
 
              application.MessageBox('Liberação Efetuada com Sucesso','Atenção',mb_ok+MB_ICONINFORMATION);
+}
            end
            else
              application.MessageBox('Senha Inválida','Atenção',mb_ok+MB_ICONERROR);

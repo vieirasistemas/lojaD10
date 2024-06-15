@@ -1247,7 +1247,6 @@ begin
                 dm.MovEstoqueVlrTotal.Value:=StrToFloat(edqtd.Text)*StringToFloat(edvlrunit.Text);
                 dm.MovEstoquedocumento.Value:=lbdoc.Caption;
                 dm.MovEstoquefavorecido.Value:=StrToInt(edfavorecido.Text);
-                dm.movestoqueTipo.value := copy(dm.MovEstoqueTipoMov.Value,1,1);
                 dm.movestoquelocal.Value := FrmPrincipal.sb.Panels[7].Text;
                 dm.MovEstoque.Post;
 

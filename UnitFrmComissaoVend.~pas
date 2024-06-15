@@ -186,6 +186,8 @@ begin
 end;
 
 procedure TFrmComissaoVend.bt1Click(Sender: TObject);
+var
+  qry : TZQuery;
 begin
   if
     (medatainicial.Text='  /  /    ') and
@@ -197,6 +199,22 @@ begin
     Exit;
   end;
 
+  qry              :=  TZQuery.Create(nil);
+  qry.Connection   :=  dm.ZConnection1;
+  qry.Close;
+  qry.SQL.Clear;
+  qry.SQL.Add('update movestoque set');
+  qry.SQL.Add('vlrcom = VlrTotal*0.015');
+  qry.SQL.Add('where vlrcom = 0 ');
+  qry.SQL.Add('and (tipomov= '+chr(39)+'SV'+chr(39)+')');
+  qrMovEstoque.SQL.Add('and (data between '+chr(39)+
+  copy(medatainicial.text,7,4)+'/'+copy(medatainicial.text,4,2)+'/'+
+  copy(medatainicial.text,1,2)+chr(39)+' and '+chr(39)+
+  copy(MeDataFinal.text,7,4)+'/'+copy(MeDataFinal.text,4,2)+'/'+
+  copy(MeDataFinal.text,1,2)+chr(39)+')');
+  qry.ExecSQL;
+  qry.Free;
+
   dm.parametros.Close;
   dm.parametros.Open;
 
@@ -207,7 +225,7 @@ begin
         qrMovEstoque.SQL.Clear;
         qrMovEstoque.SQL.Add('select F.apelido as nomefornecedor,P.nome,sum(E.qtd) as qtd,sum(E.VlrTotal) as VlrTotal,sum(E.vlrcom) as vlrcom');
         qrMovEstoque.SQL.Add('from movestoque E, produtos P, fornecedores F');
-        qrMovEstoque.SQL.Add('where (E.produto=P.codigo) and (P.fornecedor=F.codigo)');
+        qrMovEstoque.SQL.Add('where (E.vendedor=F.codigo) and (E.produto=P.codigo)');
         qrMovEstoque.SQL.Add('and (E.tipomov= '+chr(39)+'SV'+chr(39)+')');
         qrMovEstoque.SQL.Add('and (E.data between '+chr(39)+
         copy(medatainicial.text,7,4)+'/'+copy(medatainicial.text,4,2)+'/'+

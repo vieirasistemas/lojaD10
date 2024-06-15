@@ -1238,6 +1238,7 @@ begin
                        begin
                          tPag := fpCartaoCredito;
                          vPag := FrmVenda.qrtotalvendatotal.Value;
+                         tpIntegra := tiPagNaoIntegrado;
                        end;
                     end
                  else if FrmVenda.qrtotalvendaformapagto.Value='CD' then
@@ -1246,6 +1247,7 @@ begin
                        begin
                          tPag := fpCartaoDebito;
                          vPag := FrmVenda.qrtotalvendatotal.Value;
+                         tpIntegra := tiPagNaoIntegrado;
                        end;
                     end
                  else if FrmVenda.qrtotalvendaformapagto.Value='CP' then
@@ -1274,9 +1276,15 @@ begin
               if FrmVenda.qrtotalvendaformapagto.Value='AV' then
                  tPag := fpDinheiro
               else if FrmVenda.qrtotalvendaformapagto.Value='CC' then
-                 tPag := fpCartaoCredito
+                 begin
+                   tPag := fpCartaoCredito;
+                   tpIntegra := tiPagNaoIntegrado;
+                 end
               else if FrmVenda.qrtotalvendaformapagto.Value='CD' then
-                 tPag:= fpCartaoDebito
+                 begin
+                   tPag:= fpCartaoDebito;
+                   tpIntegra := tiPagNaoIntegrado;
+                 end
               else if FrmVenda.qrtotalvendaformapagto.Value='CP' then
                  tPag:= fpCheque
               else

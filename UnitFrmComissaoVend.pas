@@ -186,6 +186,8 @@ begin
 end;
 
 procedure TFrmComissaoVend.bt1Click(Sender: TObject);
+var
+  qry : TZQuery;
 begin
   if
     (medatainicial.Text='  /  /    ') and
@@ -196,6 +198,22 @@ begin
     medatainicial.SetFocus;
     Exit;
   end;
+
+  qry              :=  TZQuery.Create(nil);
+  qry.Connection   :=  dm.ZConnection1;
+  qry.Close;
+  qry.SQL.Clear;
+  qry.SQL.Add('update movestoque set');
+  qry.SQL.Add('vlrcom = VlrTotal*0.015');
+  qry.SQL.Add('where vlrcom = 0 ');
+  qry.SQL.Add('and (tipomov= '+chr(39)+'SV'+chr(39)+')');
+  qry.SQL.Add('and (data between '+chr(39)+
+  copy(medatainicial.text,7,4)+'/'+copy(medatainicial.text,4,2)+'/'+
+  copy(medatainicial.text,1,2)+chr(39)+' and '+chr(39)+
+  copy(MeDataFinal.text,7,4)+'/'+copy(MeDataFinal.text,4,2)+'/'+
+  copy(MeDataFinal.text,1,2)+chr(39)+')');
+  qry.ExecSQL;
+  qry.Free;
 
   dm.parametros.Close;
   dm.parametros.Open;

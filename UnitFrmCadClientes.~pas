@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Buttons, StdCtrls, Mask, DBCtrls, ComCtrls, Grids, DBGrids,
   EditAlinhado, ExtCtrls, DB, DBTables, ZAbstractRODataset,
-  ZAbstractDataset, ZDataset, QRCtrls, QuickRpt, RLBarcode, RLReport, jpeg;
+  ZAbstractDataset, ZDataset, QRCtrls, QuickRpt, RLBarcode, RLReport, jpeg,
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP;
 
 type
   TFrmCadClientes = class(TForm)
@@ -40,7 +41,6 @@ type
     Label27: TLabel;
     EdBairro: TEdit;
     Label28: TLabel;
-    EdCidade: TEdit;
     Label29: TLabel;
     cbestado: TComboBox;
     Label30: TLabel;
@@ -167,6 +167,9 @@ type
     BitBtn6: TBitBtn;
     rbcodigo: TRadioButton;
     edcpf: TEdit;
+    cbcidade: TComboBox;
+    Label1: TLabel;
+    edfantasia: TEdit;
     procedure FormShow(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure btnovoClick(Sender: TObject);
@@ -196,7 +199,6 @@ type
     procedure ednomeEnter(Sender: TObject);
     procedure EdEnderecoEnter(Sender: TObject);
     procedure EdBairroEnter(Sender: TObject);
-    procedure EdCidadeEnter(Sender: TObject);
     procedure cbestadoEnter(Sender: TObject);
     procedure mecepEnter(Sender: TObject);
     procedure mefone1Enter(Sender: TObject);
@@ -210,7 +212,6 @@ type
     procedure ednomeExit(Sender: TObject);
     procedure EdEnderecoExit(Sender: TObject);
     procedure EdBairroExit(Sender: TObject);
-    procedure EdCidadeExit(Sender: TObject);
     procedure cbestadoExit(Sender: TObject);
     procedure mecepExit(Sender: TObject);
     procedure mefone1Exit(Sender: TObject);
@@ -224,6 +225,10 @@ type
     procedure BitBtn6Click(Sender: TObject);
     procedure edcpfEnter(Sender: TObject);
     procedure edcpfExit(Sender: TObject);
+    procedure cbcidadeEnter(Sender: TObject);
+    procedure cbcidadeExit(Sender: TObject);
+    procedure edfantasiaEnter(Sender: TObject);
+    procedure edfantasiaExit(Sender: TObject);
   private
     { Private declarations }
   public
@@ -239,7 +244,7 @@ var
 implementation
 
 uses Unitdm, UnitFrmPrincipal, UnitFrmReceber, UnitFrmReceberImp,
-  UnitFrmRecibo, Math, UnitFrmEstoque;
+  UnitFrmRecibo, Math, UnitFrmEstoque, UnitFrmVendaRefaturar;
 
 {$R *.dfm}
 
@@ -405,9 +410,10 @@ begin
   FrmCadClientes.edrg.Text:=dm.Clientesrg.value;
   FrmCadClientes.edcodigo.Text:=FloatToStr(dm.Clientescodigo.value);
   FrmCadClientes.ednome.Text:=dm.Clientesnome.value;
+  FrmCadClientes.edfantasia.Text:=dm.clientesfantasia.value;
   FrmCadClientes.EdEndereco.Text:=dm.Clientesendereco.value;
   FrmCadClientes.EdBairro.Text:=dm.Clientesbairro.value;
-  FrmCadClientes.EdCidade.Text:=dm.Clientescidade.value;
+  FrmCadClientes.cbcidade.Text:=dm.Clientescidade.value;
   FrmCadClientes.cbestado.Text:=dm.Clientesestado.value;
   FrmCadClientes.mecep.Text:=dm.Clientescep.value;
   FrmCadClientes.mefone1.Text:=dm.Clientesfone1.value;
@@ -442,11 +448,6 @@ begin
   FrmCadClientes.btgravar.enabled:=true;
   FrmCadClientes.btcancelar.Caption:='Cancelar';
   FrmCadClientes.P_dados.enabled:=true;
-end;
-
-procedure TFrmCadClientes.EdCidadeEnter(Sender: TObject);
-begin
-  EdCidade.Color:=$0080FFFF;
 end;
 
 procedure habilita;
@@ -517,9 +518,10 @@ begin
   FrmCadClientes.edrg.Text:='';
   FrmCadClientes.EdCodigo.Text:='';
   FrmCadClientes.ednome.Text:='';
+  FrmCadClientes.edfantasia.Text:='';
   FrmCadClientes.EdEndereco.Text:='';
   FrmCadClientes.EdBairro.Text:='';
-  FrmCadClientes.EdCidade.Text:='';
+  FrmCadClientes.cbcidade.Text:='';
   FrmCadClientes.cbestado.Text:='';
   FrmCadClientes.mecep.Text:='';
   FrmCadClientes.mefone1.Text:='';
@@ -564,16 +566,26 @@ end;
 
 procedure TFrmCadClientes.FormShow(Sender: TObject);
 begin
-      dm.parametros.Close;
-      dm.parametros.Open;
-      dm.Clientes.Close;
-      dm.Clientes.SQL.Clear;
-      dm.Clientes.SQL.Add('select * from clientes');
+  qry              :=  TZQuery.Create(nil);
+  qry.Connection   :=  dm.ZConnection1;
+  qry.SQL.Add('select UF from municipios');
+  qry.SQL.Add('group by UF');
+  qry.Open;
+  cbestado.Items.Clear;
+  while not qry.Eof do
+        begin
+          cbestado.Items.Add(qry.fieldbyname('UF').AsString);
+          qry.Next;
+        end;
+  qry.Free;
 
-      PageControl1.ActivePageIndex := 0;
-      edpesquisa.SetFocus;
-      dm.parametros.Open;
-      habilita;
+  dm.parametros.Close;
+  dm.parametros.Open;
+
+  PageControl1.ActivePageIndex := 0;
+  edpesquisa.SetFocus;
+  dm.parametros.Open;
+  habilita;
 end;
 
 procedure TFrmCadClientes.SpeedButton1Click(Sender: TObject);
@@ -614,13 +626,13 @@ begin
      begin
        qratualizar.Close;
        qratualizar.SQL.Clear;
-       qratualizar.SQL.Add('CALL sp_i_clientes(:c_cpf, :c_rg, :c_nome, :c_endereco, :c_bairro, :c_cidade, :c_estado, :c_cep, :c_fone1, :c_fone2, :c_fone3, :c_sexo, :c_dtnasc, :c_email, :c_instagran)');
+       qratualizar.SQL.Add('CALL sp_i_clientes(:c_cpf, :c_rg, :c_nome, :c_endereco, :c_bairro, :c_cidade, :c_estado, :c_cep, :c_fone1, :c_fone2, :c_fone3, :c_sexo, :c_dtnasc, :c_email, :c_instagran, :c_fantasia )');
        qratualizar.Params[0].Value := edcpf.Text;
        qratualizar.Params[1].Value := edrg.Text;
        qratualizar.Params[2].Value := ednome.Text;
        qratualizar.Params[3].Value := EdEndereco.Text;
        qratualizar.Params[4].Value := EdBairro.Text;
-       qratualizar.Params[5].Value := EdCidade.Text;
+       qratualizar.Params[5].Value := cbcidade.Text;
        qratualizar.Params[6].Value := cbestado.Text;
        qratualizar.Params[7].Value := mecep.Text;
        qratualizar.Params[8].Value := mefone1.Text;
@@ -633,9 +645,10 @@ begin
        if medtnasc.Text<>'  /  /    ' then
           qratualizar.Params[12].Value := StrToDate(medtnasc.Text)
        else
-          qratualizar.Params[12].Value := StrToDate('99/99/9999');
+          qratualizar.Params[12].Value := StrToDate('00/00/0000');
        qratualizar.Params[13].Value := Edemail.Text;
        qratualizar.Params[14].Value := edhome.Text;
+       qratualizar.Params[15].Value := edfantasia.Text;
        qratualizar.ExecSQL;
 
        tip:='I';
@@ -644,30 +657,30 @@ begin
      begin
        qratualizar.Close;
        qratualizar.SQL.Clear;
-       qratualizar.SQL.Add('CALL sp_a_clientes(:c_codigo, :c_cpf, :c_rg, :c_nome, :c_endereco, :c_bairro, :c_cidade, :c_estado, :c_cep, :c_fone1, :c_fone2, :c_fone3, :c_sexo, :c_dtnasc, :c_email, :c_instagran)');
+       qratualizar.SQL.Add('CALL sp_a_clientes(:c_codigo, :c_cpf, :c_rg, :c_nome, :c_endereco, :c_bairro, :c_cidade, :c_estado, :c_cep, :c_fone1, :c_fone2, :c_fone3, :c_sexo, :c_dtnasc, :c_email, :c_instagran, :c_fantasia)');
        qratualizar.Params[0].Value := EdCodigo.Text;
        qratualizar.Params[1].Value := edcpf.Text;
-       qratualizar.Params[2].Value := edcpf.Text;
-       qratualizar.Params[3].Value := edrg.Text;
-       qratualizar.Params[4].Value := ednome.Text;
-       qratualizar.Params[5].Value := EdEndereco.Text;
-       qratualizar.Params[6].Value := EdBairro.Text;
-       qratualizar.Params[7].Value := EdCidade.Text;
-       qratualizar.Params[8].Value := cbestado.Text;
-       qratualizar.Params[9].Value := mecep.Text;
-       qratualizar.Params[10].Value := mefone1.Text;
-       qratualizar.Params[11].Value := mefone2.Text;
-       qratualizar.Params[12].Value := mefone3.Text;
+       qratualizar.Params[2].Value := edrg.Text;
+       qratualizar.Params[3].Value := ednome.Text;
+       qratualizar.Params[4].Value := EdEndereco.Text;
+       qratualizar.Params[5].Value := EdBairro.Text;
+       qratualizar.Params[6].Value := cbcidade.Text;
+       qratualizar.Params[7].Value := cbestado.Text;
+       qratualizar.Params[8].Value := mecep.Text;
+       qratualizar.Params[9].Value := mefone1.Text;
+       qratualizar.Params[10].Value := mefone2.Text;
+       qratualizar.Params[11].Value := mefone3.Text;
        if cbsexo.Text<>'' then
-          qratualizar.Params[13].Value := copy(cbsexo.Text,1,1)
+          qratualizar.Params[12].Value := copy(cbsexo.Text,1,1)
        else
-          qratualizar.Params[13].Value := '';
+          qratualizar.Params[12].Value := '';
        if medtnasc.Text<>'  /  /    ' then
-          qratualizar.Params[14].Value := StrToDate(medtnasc.Text)
+          qratualizar.Params[13].Value := StrToDate(medtnasc.Text)
        else
-          qratualizar.Params[14].Value := StrToDate('00/00/0000');
-       qratualizar.Params[15].Value := Edemail.Text;
-       qratualizar.Params[16].Value := edhome.Text;
+          qratualizar.Params[13].Value := StrToDate('00/00/0000');
+       qratualizar.Params[14].Value := Edemail.Text;
+       qratualizar.Params[15].Value := edhome.Text;
+       qratualizar.Params[16].Value := edfantasia.Text;
        qratualizar.ExecSQL;
       end;
   habilita;
@@ -831,6 +844,16 @@ begin
                   FrmEstoque.edcliente.Text:=IntToStr(dm.clientescodigo.value);
                   FrmEstoque.edcliente.SelStart:=0;
                   FrmEstoque.edcliente.SelLength:=length(FrmEstoque.edcliente.Text);
+                  modalresult := mrok;
+                end
+           end
+        else if assigned(FrmPedidos) then
+           begin
+             if (dm.Clientes.Active) and (dm.Clientes.RecordCount>0) then
+                begin
+                  FrmPedidos.edcliente.Text:=IntToStr(dm.clientescodigo.value);
+                  FrmPedidos.edcliente.SelStart:=0;
+                  FrmPedidos.edcliente.SelLength:=length(FrmPedidos.edcliente.Text);
                   modalresult := mrok;
                 end
            end
@@ -1024,13 +1047,24 @@ begin
   EdBairro.Color:=clWindow;
 end;
 
-procedure TFrmCadClientes.EdCidadeExit(Sender: TObject);
-begin
-  EdCidade.Color:=clWindow;
-end;
-
 procedure TFrmCadClientes.cbestadoExit(Sender: TObject);
 begin
+  cbcidade.Items.Clear;
+  if cbestado.Text<>'' then
+     begin
+        qry              :=  TZQuery.Create(nil);
+        qry.Connection   :=  dm.ZConnection1;
+        qry.SQL.Add('select Municipio from municipios');
+        qry.sql.add('where UF = '+chr(39)+cbestado.Text+chr(39));
+        qry.Open;
+        while not qry.Eof do
+              begin
+                cbcidade.Items.Add(qry.fieldbyname('Municipio').AsString);
+                qry.Next;
+              end;
+        qry.Free;
+     end;
+
   cbestado.Color:=clWindow;
 end;
 
@@ -1080,13 +1114,13 @@ procedure TFrmCadClientes.BitBtn6Click(Sender: TObject);
 begin
   try
     dm.ZConnection1.Connected:=false;
-    dm.ZConnection1.Database:='vieir463_gestor_caramelle';
+    dm.ZConnection1.Database:='vieir463_gestor_gynbox';
     dm.ZConnection1.HostName:='vieirasistemas.com.br';
-    dm.ZConnection1.User:='vieir463_cliente';
     dm.ZConnection1.Password:='AW3se4DR5ft6*#';
+    dm.ZConnection1.User:='vieir463_cliente';
     dm.ZConnection1.Connected:=true;
   except
-    application.messagebox('Tente Novamente','Atenção! Sistema Fora do Ar',mb_ok+mb_iconexclamation);
+    application.messagebox('Tente Novamente','Atenção! Sistema Fora do Ar');
   end;
 end;
 
@@ -1120,6 +1154,26 @@ begin
            btcancelar.SetFocus;
      end;
   edcpf.Color:=clWindow;
+end;
+
+procedure TFrmCadClientes.cbcidadeEnter(Sender: TObject);
+begin
+  cbcidade.Color:=$0080FFFF;
+end;
+
+procedure TFrmCadClientes.cbcidadeExit(Sender: TObject);
+begin
+  cbcidade.Color:=clWindow;
+end;
+
+procedure TFrmCadClientes.edfantasiaEnter(Sender: TObject);
+begin
+  edfantasia.Color:=$0080FFFF;
+end;
+
+procedure TFrmCadClientes.edfantasiaExit(Sender: TObject);
+begin
+  edfantasia.Color:=clWindow;
 end;
 
 end.

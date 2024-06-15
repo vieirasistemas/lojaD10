@@ -1152,9 +1152,9 @@ begin
            begin
              if (dm.fornecedores.Active) and (dm.fornecedores.RecordCount>0) then
                 begin
-                  FrmVendaRefaturar.edcliente.Text:=IntToStr(dm.fornecedorescodigo.value);
-                  FrmVendaRefaturar.edcliente.SelStart:=0;
-                  FrmVendaRefaturar.edcliente.SelLength:=length(FrmVendaRefaturar.edcliente.Text);
+                  FrmVendaRefaturar.edvendedor.Text:=IntToStr(dm.fornecedorescodigo.value);
+                  FrmVendaRefaturar.edvendedor.SelStart:=0;
+                  FrmVendaRefaturar.edvendedor.SelLength:=length(FrmVendaRefaturar.edvendedor.Text);
                   modalresult := mrok;
                 end
            end

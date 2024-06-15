@@ -246,7 +246,6 @@ begin
         qrMovEstoque.SQL.Add('from movestoque E, produtos P, fornecedores F');
         qrMovEstoque.SQL.Add('where (E.produto=P.codigo) and (P.fornecedor=F.codigo)');
         qrMovEstoque.SQL.Add('and (E.tipomov= '+chr(39)+'SV'+chr(39)+')');
-        qrMovEstoque.sql.add('and (P.servico = '+chr(39)+'N'+chr(39)+')');
         qrMovEstoque.SQL.Add('and (E.data between '+chr(39)+
         copy(medatainicial.text,7,4)+'/'+copy(medatainicial.text,4,2)+'/'+
         copy(medatainicial.text,1,2)+chr(39)+' and '+chr(39)+
@@ -276,7 +275,6 @@ begin
         ZQuery1.SQL.Add('from movestoque E, produtos P, fornecedores F');
         ZQuery1.SQL.Add('where (E.produto=P.codigo) and (P.fornecedor=F.codigo)');
         ZQuery1.SQL.Add('and (E.tipomov= '+chr(39)+'SV'+chr(39)+')');
-        ZQuery1.sql.add('and (P.servico = '+chr(39)+'N'+chr(39)+')');
         ZQuery1.SQL.Add('and (E.data between '+chr(39)+
         copy(medatainicial.text,7,4)+'/'+copy(medatainicial.text,4,2)+'/'+
         copy(medatainicial.text,1,2)+chr(39)+' and '+chr(39)+

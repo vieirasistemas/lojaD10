@@ -3,7 +3,7 @@ program Gestorloja;
 uses
   Forms,
   SysUtils,
-  Dialogs, 
+  Dialogs,
   UnitFrmPrincipal in 'UnitFrmPrincipal.pas' {FrmPrincipal},
   Unitdm in 'Unitdm.pas' {dm: TDataModule},
   UnitFrmParametros in 'UnitFrmParametros.pas' {FrmParametros},
@@ -63,39 +63,25 @@ uses
   UEnvioNfce in 'UEnvioNfce.pas' {fEnvioNfce},
   UnitFrmMuncicipios in 'UnitFrmMuncicipios.pas' {FrmMuncicipios},
   UnitFrmComissaoVend in 'UnitFrmComissaoVend.pas' {FrmComissaoVend},
-  UnitFrmRelVendasProd in 'UnitFrmRelVendasProd.pas' {FrmRelVendasProd};
+  UnitFrmRelVendasProd in 'UnitFrmRelVendasProd.pas' {FrmRelVendasProd},
+  UnitFrmCFOP in 'UnitFrmCFOP.pas' {FrmCFOP},
+  UnitFrmViolacao in 'UnitFrmViolacao.pas' {FrmViolacao},
+  UnitFrmFechamentoPedido in 'UnitFrmFechamentoPedido.pas' {FrmFechamentoPedido},
+  UnitFrmPedidosRel in 'UnitFrmPedidosRel.pas' {FrmPedidosRel},
+  UnitFrmPedidos in 'UnitFrmPedidos.pas' {FrmPedidos};
 
 {$R *.res}
 
 var
-arq: TextFile;
-linha,texto,nomebd,serv,senha,usu:string;
+nomebd,serv,senha,usu:string;
 begin
   Application.Initialize;
-  Application.Title := 'Gestor Serviços - Sistema Integrado de Gestão';
+  Application.Title := 'Gestor Loja';
   Application.CreateForm(Tdm, dm);
-
-  AssignFile ( arq, ExtractFilePath(Application.ExeName) +'configuracoes.ini');  //C:\Gestor
-  Reset ( arq );
-  ReadLn ( arq, linha );
-  while not Eof ( arq ) do
-  begin
-    texto:=trim(copy(linha,1,80));
-    if copy(texto,1,14)='BANCO DE DADOS' then
-       nomebd:=trim(copy(texto,16,80));
-    if copy(texto,1,8)='SERVIDOR' then
-       serv:=trim(copy(texto,10,80));
-    ReadLn ( arq, linha );
-  end;
-  CloseFile ( arq );
-
   dm.ZConnection1.Connected:=false;
-//  showmessage(nomebd);
-//  showmessage(serv);
-{
-  nomebd:='vieir463_gestor_caramelle';
+
+  nomebd:='vieir463_gestor_gynbox';
   serv:='vieirasistemas.com.br';
-}
   senha:='AW3se4DR5ft6*#';
   usu:='vieir463_cliente';
 
@@ -113,8 +99,8 @@ begin
             Application.Terminate;
           end;
         end;
+
   Application.CreateForm(TFrmPrincipal, FrmPrincipal);
-  FrmPrincipal.Caption := 'Gestor Serviços - Sistema Integrado de Gestão';
   Application.Run;
 
 end.

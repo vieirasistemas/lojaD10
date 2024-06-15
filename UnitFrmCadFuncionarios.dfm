@@ -24,7 +24,7 @@ object FrmCadFuncionarios: TFrmCadFuncionarios
     Top = 0
     Width = 796
     Height = 547
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -352,6 +352,7 @@ object FrmCadFuncionarios: TFrmCadFuncionarios
             Title.Font.Height = -11
             Title.Font.Name = 'MS Sans Serif'
             Title.Font.Style = []
+            Width = 64
             Visible = True
           end>
       end

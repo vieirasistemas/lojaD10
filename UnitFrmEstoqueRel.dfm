@@ -270,8 +270,8 @@ object FrmEstoqueRel: TFrmEstoqueRel
     NumGlyphs = 2
   end
   object RLReport1: TRLReport
-    Left = 0
-    Top = 446
+    Left = 520
+    Top = 46
     Width = 794
     Height = 1123
     DataSource = dsmovestoque
@@ -741,6 +741,7 @@ object FrmEstoqueRel: TFrmEstoqueRel
         Alignment = taRightJustify
         AutoSize = False
         DataField = 'VlrTotal'
+        DataSource = dsmovestoque
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -11
@@ -757,6 +758,7 @@ object FrmEstoqueRel: TFrmEstoqueRel
         Alignment = taRightJustify
         AutoSize = False
         DataField = 'qtd'
+        DataSource = dsmovestoque
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -11
@@ -974,8 +976,8 @@ object FrmEstoqueRel: TFrmEstoqueRel
     TabOrder = 14
   end
   object RLReport2: TRLReport
-    Left = 709
-    Top = -170
+    Left = 621
+    Top = 238
     Width = 816
     Height = 1056
     Font.Charset = DEFAULT_CHARSET
@@ -1529,6 +1531,7 @@ object FrmEstoqueRel: TFrmEstoqueRel
         Alignment = taRightJustify
         AutoSize = False
         DataField = 'VlrTotal'
+        DataSource = dsmovestoque
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -11
@@ -1545,6 +1548,7 @@ object FrmEstoqueRel: TFrmEstoqueRel
         Alignment = taRightJustify
         AutoSize = False
         DataField = 'qtd'
+        DataSource = dsmovestoque
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -11
@@ -1837,8 +1841,8 @@ object FrmEstoqueRel: TFrmEstoqueRel
     end
   end
   object QuickRep1: TQuickRep
-    Left = 611
-    Top = 159
+    Left = 579
+    Top = 303
     Width = 1123
     Height = 794
     Frame.Color = clBlack
@@ -3085,8 +3089,8 @@ object FrmEstoqueRel: TFrmEstoqueRel
     end
   end
   object QuickRep4: TQuickRep
-    Left = 833
-    Top = -103
+    Left = 857
+    Top = 409
     Width = 816
     Height = 1056
     Frame.Color = clBlack

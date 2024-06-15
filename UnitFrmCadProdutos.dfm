@@ -196,7 +196,7 @@ object FrmCadProdutos: TFrmCadProdutos
             Title.Font.Height = -12
             Title.Font.Name = 'Arial'
             Title.Font.Style = []
-            Width = 65
+            Width = 48
             Visible = True
           end
           item
@@ -217,6 +217,25 @@ object FrmCadProdutos: TFrmCadProdutos
             Visible = True
           end
           item
+            Alignment = taCenter
+            Expanded = False
+            FieldName = 'ncm'
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -12
+            Font.Name = 'Arial'
+            Font.Style = []
+            Title.Alignment = taCenter
+            Title.Caption = 'NCM'
+            Title.Font.Charset = ANSI_CHARSET
+            Title.Font.Color = clNavy
+            Title.Font.Height = -12
+            Title.Font.Name = 'Arial'
+            Title.Font.Style = []
+            Width = 69
+            Visible = True
+          end
+          item
             Expanded = False
             FieldName = 'atacado'
             Font.Charset = ANSI_CHARSET
@@ -231,7 +250,7 @@ object FrmCadProdutos: TFrmCadProdutos
             Title.Font.Height = -12
             Title.Font.Name = 'Arial'
             Title.Font.Style = []
-            Width = 90
+            Width = 70
             Visible = True
           end
           item
@@ -249,7 +268,7 @@ object FrmCadProdutos: TFrmCadProdutos
             Title.Font.Height = -12
             Title.Font.Name = 'Arial'
             Title.Font.Style = []
-            Width = 90
+            Width = 70
             Visible = True
           end
           item
@@ -268,6 +287,7 @@ object FrmCadProdutos: TFrmCadProdutos
             Title.Font.Height = -12
             Title.Font.Name = 'Arial'
             Title.Font.Style = []
+            Width = 60
             Visible = True
           end
           item
@@ -824,7 +844,7 @@ object FrmCadProdutos: TFrmCadProdutos
         object lbfornecedor: TLabel
           Left = 241
           Top = 68
-          Width = 480
+          Width = 536
           Height = 16
           AutoSize = False
           Font.Charset = ANSI_CHARSET
@@ -875,7 +895,7 @@ object FrmCadProdutos: TFrmCadProdutos
         end
         object Label1: TLabel
           Left = 569
-          Top = 69
+          Top = 101
           Width = 29
           Height = 16
           Caption = 'NCM'
@@ -888,7 +908,7 @@ object FrmCadProdutos: TFrmCadProdutos
         end
         object Label4: TLabel
           Left = 505
-          Top = 103
+          Top = 135
           Width = 93
           Height = 16
           Caption = 'C'#243'digo de Barra'
@@ -1157,7 +1177,7 @@ object FrmCadProdutos: TFrmCadProdutos
         end
         object edncm: TEdit
           Left = 607
-          Top = 68
+          Top = 100
           Width = 170
           Height = 24
           CharCase = ecUpperCase
@@ -1168,12 +1188,12 @@ object FrmCadProdutos: TFrmCadProdutos
           Font.Style = []
           ParentFont = False
           TabOrder = 6
-          OnEnter = EdreferenciaEnter
-          OnExit = EdreferenciaExit
+          OnEnter = edncmEnter
+          OnExit = edncmExit
         end
         object edcodbarra: TEdit
           Left = 607
-          Top = 99
+          Top = 131
           Width = 170
           Height = 24
           CharCase = ecUpperCase
@@ -1185,8 +1205,8 @@ object FrmCadProdutos: TFrmCadProdutos
           MaxLength = 15
           ParentFont = False
           TabOrder = 8
-          OnEnter = EdreferenciaEnter
-          OnExit = EdreferenciaExit
+          OnEnter = edcodbarraEnter
+          OnExit = edcodbarraExit
         end
         object edcomissao: TEdit
           Left = 139
@@ -1224,6 +1244,13 @@ object FrmCadProdutos: TFrmCadProdutos
       OnClick = AlterarComisso1Click
     end
     object N1: TMenuItem
+      Caption = '-'
+    end
+    object AlteraroNCMdosprodutos1: TMenuItem
+      Caption = 'Alterar o NCM do(s) produto(s)'
+      OnClick = AlteraroNCMdosprodutos1Click
+    end
+    object N2: TMenuItem
       Caption = '-'
     end
     object AlterarCdigodoProduto1: TMenuItem
